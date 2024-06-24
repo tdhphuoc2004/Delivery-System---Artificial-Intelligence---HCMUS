@@ -1,12 +1,9 @@
-def BFS(map, delivery, goal):
+def BFS(board):
     #Breadth-First-Search
     '''
     Parameters
     ----------
-    map: nparray contained the map
-    delivery: (x,y)
-    goal: (x,y)
-
+    board: <class Board type> contain matrix and utility function
     Returns
     -------
     List of valid paths
@@ -14,23 +11,23 @@ def BFS(map, delivery, goal):
     Below functions will have the same paramenters and reuturn
     '''
 
-def DFS(map, delivery, goal):
+def DFS(board):
     '''Depth-First-Search
     '''
 
-def UCS(map, delivery, goal):
+def UCS(board):
     '''Uniform-Cost-Search
     '''
 
-def IDS(map, delivery, goal):
+def IDS(board):
     '''Iterative deepening search
     '''
 
-def GBFS(map, delivery, goal):
+def GBFS(board):
     '''Greedy Best First Search
     '''
 
-def Asearch(map, delivery, goal):
+def Asearch(board):
     '''A*search
     '''
 
