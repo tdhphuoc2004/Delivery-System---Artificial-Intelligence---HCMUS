@@ -88,7 +88,7 @@ def hightlight_SpecialCell(row,col,string,color):
     
 #Main function   
 def main():
-    matrix = read_file('input.txt')
+    matrix = read_file('input1_level1.txt')
     print(matrix)
     #Game loop
     run = True
