@@ -30,4 +30,4 @@ class Board:
         return neighbors
     
     def is_valid_move(self, x, y):
-        return 0 <= x < self.rows and 0 <= y < self.cols and self.matrix[x][y] in [0, 'G']
+        return 0 <= x < self.rows and 0 <= y < self.cols and self.matrix[x][y] != '-1'
