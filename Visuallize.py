@@ -24,7 +24,7 @@ def read_file(filepath):
 pygame.init()
 
 #create the screen
-SCREEN_WIDTH = 1000
+SCREEN_WIDTH = 1050
 SCREEN_HEIGHT = 500
 screen = pygame.display.set_mode ((SCREEN_WIDTH,SCREEN_HEIGHT))
 
