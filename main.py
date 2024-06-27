@@ -7,7 +7,7 @@ if __name__ == "__main__":
     matrix = Visuallize.read_file("input1_level1.txt")
     board = Board(matrix)
     #Call search function here
-    path = BFS(board)
+    path = DFS(board)
     #Visualize map 
     Visuallize.start(board, path) 
 

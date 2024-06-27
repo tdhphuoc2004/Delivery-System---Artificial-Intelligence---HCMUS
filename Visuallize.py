@@ -10,7 +10,6 @@ START = (213,232,212)
 HIGHLIGHT = (173, 216, 230)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-num_rows, num_cols = 0, 0
 
 #Read Map
 def read_file(filepath):
@@ -25,7 +24,7 @@ def read_file(filepath):
 pygame.init()
 
 #create the screen
-SCREEN_WIDTH = 500
+SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 500
 screen = pygame.display.set_mode ((SCREEN_WIDTH,SCREEN_HEIGHT))
 
@@ -35,9 +34,9 @@ icon = pygame.image.load('car.png')
 pygame.display.set_icon(icon)
 
 #Map
-def draw_map():
-    for row in range(10):
-        for col in range(10):
+def draw_map(rows, cols): 
+    for row in range(rows):
+        for col in range(cols):
             rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
             pygame.draw.rect(screen, WHITE, rect)
             pygame.draw.rect(screen, BLACK, rect, 1)
@@ -88,7 +87,7 @@ def start(board, path):
                 run = False
         
         screen.fill((255,255,255))
-        draw_map()
+        draw_map(board.rows, board.cols)
         for i in range(board.rows):
             for j in range(board.cols):
                 if board.matrix[i][j] != '0':  
