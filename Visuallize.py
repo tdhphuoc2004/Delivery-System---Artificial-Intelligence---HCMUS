@@ -2,12 +2,14 @@ import pygame
 import sys
 import numpy as np
 import time 
+
 cell_size = 50
+PATH = (237,208,137)
 F1 = (255,240,213)
 BLOCKED = (100,118,135)
 GOAL = (255,127,131)
 START = (213,232,212)
-HIGHLIGHT = (173, 216, 230)
+TOLL_BOOTH = (173, 216, 230)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 
@@ -25,7 +27,7 @@ pygame.init()
 
 #create the screen
 SCREEN_WIDTH = 1050
-SCREEN_HEIGHT = 500
+SCREEN_HEIGHT = 750
 screen = pygame.display.set_mode ((SCREEN_WIDTH,SCREEN_HEIGHT))
 
 #Caption and Icon
@@ -40,7 +42,14 @@ def draw_map(rows, cols):
             rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
             pygame.draw.rect(screen, WHITE, rect)
             pygame.draw.rect(screen, BLACK, rect, 1)
-            
+
+#Write String
+def write_String(Y,X,string):
+    font = pygame.font.SysFont(None, 26)
+    text = font.render(str(string), True, BLACK)
+    text_rect = text.get_rect(center=(X + cell_size * 3 // 2, Y + cell_size * 3 // 2))
+    screen.blit(text, text_rect)      
+         
 #Highlight    
 def highlight_BlockedCell(row,col):
     rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
@@ -48,7 +57,7 @@ def highlight_BlockedCell(row,col):
     pygame.draw.rect(screen, BLACK, rect, 1)
     
 def hightlight_SpecialCell(row,col,string,color):
-    color_table = [GOAL,F1,START] # GOAL = 0, F1 = 1, START= 2
+    color_table = [GOAL,F1,START,TOLL_BOOTH] # GOAL = 0, F1 = 1, START= 2,TOLL_BOTH = 3
     rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
     pygame.draw.rect(screen, color_table[color], rect)
     pygame.draw.rect(screen, BLACK, rect, 1)
@@ -56,14 +65,25 @@ def hightlight_SpecialCell(row,col,string,color):
     text = font.render(str(string), True, BLACK)
     text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
     screen.blit(text, text_rect)
-
+    
+def hightlight_cell(Y,X,color):
+    table = ['WHITE', 'GOAL', 'F1', 'START', 'STOP', 'BLOCKED', 'PATH']
+    color_table = [WHITE,GOAL,F1,START,TOLL_BOOTH,BLOCKED,PATH] # WHITE = 0 ,GOAL = 1, F1 = 2, START= 3,TOLL_BOTH = 4, BLOCKED = 5, PATH = 6,
+    rect = pygame.Rect(X , Y , cell_size, cell_size)
+    pygame.draw.rect(screen, color_table[color], rect)
+    pygame.draw.rect(screen, BLACK, rect, 1)
+    font = pygame.font.SysFont(None, 18)
+    text = font.render(table[color], True, BLACK)
+    text_rect = text.get_rect(center=(X + cell_size//2 + cell_size, Y + cell_size//2))
+    screen.blit(text, text_rect)
+    
 def highlight_path(path):
     for step in path:
         row, col = step
         
         # Highlight cell with color
         rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
-        pygame.draw.rect(screen, HIGHLIGHT, rect)
+        pygame.draw.rect(screen, PATH, rect)
         pygame.draw.rect(screen, BLACK, rect, 1)
         
         # Optionally, center icon (e.g., car) on the cell if icon is provided
@@ -74,9 +94,9 @@ def highlight_path(path):
         pygame.display.flip()  # Update the display
 
 #Main function   
-def start(board, path):
+def start(board, path,cost):
 
-    print(board.matrix)   
+    #print(board.matrix)   
     step_index = 0
 
     #Game loop
@@ -99,21 +119,43 @@ def start(board, path):
                     elif value.startswith('G'):
                         hightlight_SpecialCell(i,j,value,0)
                     elif value.startswith('F'):
-                        hightlight_SpecialCell(i,j,value,1)               
+                        hightlight_SpecialCell(i,j,value,1)   
+                    else:
+                        hightlight_SpecialCell(i,j,value,3)        
         pygame.display.update()
 
         # Animate car along the path and highlight visited cells using highlight_path
         if step_index < len(path):
             highlight_path(path[:step_index])  # Highlight visited cells up to current step
             row, col = path[step_index]
-            car_x = col * cell_size
-            car_y = row * cell_size
-            screen.blit(icon, (car_x, car_y))  # Draw car icon at calculated position if not visited
             step_index += 1  # Move to the next step in the path
         
         pygame.display.update()
-        time.sleep(0.5)  # Adjust delay time for slower motion
-
+        time.sleep(0.005)  # Adjust delay time for slower motion
+        
+        for k in range(1, 7):
+            X_Visual = 250 * k
+            Y_Visual = 550
+            if k >= 4:
+                X_Visual = 250 * (k -3)
+                Y_Visual = 650  
+            hightlight_cell(Y_Visual, X_Visual, k)
+        
+        X_Str = 0
+        Y_Str = 550
+        write_String(Y_Str,X_Str,'Cost: ' + str(cost))
+                    
+        pygame.display.update()
+            
+        if step_index == len(path):             
+            run = False
+                   
+    #Wait
+    wait = True
+    while wait:
+        for event in pygame.event.get():    
+            if event.type == pygame.QUIT:
+                wait = False
     pygame.quit
     sys.exit()
     

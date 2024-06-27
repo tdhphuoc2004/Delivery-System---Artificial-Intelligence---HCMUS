@@ -9,7 +9,7 @@ if __name__ == "__main__":
     #Call search function here
     path, depth_limit = IDS(board)
     #Visualize map 
-    Visuallize.start(board, path) 
+    Visuallize.start(board, path,depth_limit) 
 
     #Some information about search
     # if path:
