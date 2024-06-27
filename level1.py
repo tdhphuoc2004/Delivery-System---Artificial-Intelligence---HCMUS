@@ -57,7 +57,34 @@ def BFS(board):
 def DFS(board):
     '''Depth-First-Search
     '''
+    start = board.start_pos
+    goal = board.goal_pos
+    if not start or not goal:
+        return None 
+    
+    # Initialize the stack with the starting position
+    stack = [start]
+    # Set to keep track of visited nodes
+    visited = set()
+    path = {start: [start]}
+    while stack:
+        # Pop a node from the stack
+        current = stack.pop()
+        if current == goal:
+            return path[current]  # Return the path to the goal
 
+        if current not in visited:
+            visited.add(current)  # Mark the current node as visited
+            # Get the neighbors of the current node
+            neighbors = board.get_neighbors(current)
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    if neighbor not in path:
+                        # Update the path to this neighbor
+                        path[neighbor] = path[current] + [neighbor]
+
+    return None  
 def UCS(board):
     '''Uniform-Cost Search'''
     start = board.start_pos
@@ -89,6 +116,14 @@ def UCS(board):
 def IDS(board):
     '''Iterative deepening search
     '''
+    depth_limit = 0
+    while True:
+        result = DLS(board, depth_limit)
+        if result is not None:
+            return result, depth_limit  
+        depth_limit += 1  # Increase depth limit for next iteration
+
+    return None, depth_limit  
 
 def GBFS(board):
     '''Greedy Best First Search
@@ -122,3 +157,34 @@ def Asearch(board):
     '''A*search
     '''
 
+def DLS(board, depth_limit):
+    '''Depth-Limited Search'''
+    start = board.start_pos
+    goal = board.goal_pos
+    if not start or not goal:
+        return None 
+    
+    if depth_limit <= 0:
+        return None  # Reached depth limit without finding goal
+    
+    # Initialize the stack with the starting position
+    stack = [(start, [start])]
+    # Set to keep track of visited nodes
+    visited = set()
+    visited.add(start)
+    
+    while stack:
+        current, path = stack.pop()
+        
+        # Get the neighbors of the current node
+        neighbors = board.get_neighbors(current)
+        
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                if neighbor == goal:
+                    return path + [neighbor]  # Return the path to the goal
+                elif len(path) < depth_limit:  # Check depth limit
+                    stack.append((neighbor, path + [neighbor]))
+    
+    return None  # If no path found within this depth limit

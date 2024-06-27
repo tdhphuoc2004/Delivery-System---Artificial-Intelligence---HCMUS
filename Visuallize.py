@@ -57,7 +57,7 @@ def hightlight_SpecialCell(row,col,string,color):
     text = font.render(str(string), True, BLACK)
     text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
     screen.blit(text, text_rect)
-    
+
 #Main function   
 def main():
     matrix = read_file('input.txt')
