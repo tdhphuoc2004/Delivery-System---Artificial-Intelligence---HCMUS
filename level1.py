@@ -156,6 +156,31 @@ def GBFS(board):
 def Asearch(board):
     '''A*search
     '''
+    start = board.start_pos
+    goal = board.goal_pos
+    if not start or not goal:
+        return None
+
+    frontier = []
+    heapq.heappush(frontier, (0, start))
+    came_from = {start: None}
+    cost_so_far = {start: 0}
+
+    while frontier:
+        current_priority, current = heapq.heappop(frontier)
+
+        if current == goal:
+            return reconstruct_path(came_from, start, goal)
+
+        for neighbor in board.get_neighbors(current):
+            new_cost = cost_so_far[current] + 1  # Assume each move has a cost of 1
+            if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+                cost_so_far[neighbor] = new_cost
+                priority = new_cost + heuristic(neighbor, goal)
+                heapq.heappush(frontier, (priority, neighbor))
+                came_from[neighbor] = current
+
+    return None
 
 def DLS(board, depth_limit):
     '''Depth-Limited Search'''
