@@ -18,9 +18,9 @@ def read_file(filepath):
     with open(filepath, 'r') as file:
         lines = file.readlines()
     
-    rows, cols = map(int, lines[0].strip().split())
+    rows, cols,time,fuel = map(int, lines[0].strip().split())
     array = np.array([line.strip().split() for line in lines[1:]])
-    return array
+    return array,time,fuel
 
 #Intialize the pygame
 pygame.init()
@@ -94,7 +94,7 @@ def highlight_path(path):
         pygame.display.flip()  # Update the display
 
 #Main function   
-def start(board, path,cost):
+def start(board, path):
 
     #print(board.matrix)   
     step_index = 0
@@ -141,9 +141,9 @@ def start(board, path,cost):
                 Y_Visual = 650  
             hightlight_cell(Y_Visual, X_Visual, k)
         
-        X_Str = 0
-        Y_Str = 550
-        write_String(Y_Str,X_Str,'Cost: ' + str(cost))
+        # X_Str = 0
+        # Y_Str = 550
+        # write_String(Y_Str,X_Str,'Cost: ' + str(board.get_cost()))
                     
         pygame.display.update()
             
