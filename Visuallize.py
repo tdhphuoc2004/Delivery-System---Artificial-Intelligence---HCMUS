@@ -25,10 +25,13 @@ def read_file(filepath):
 #Intialize the pygame
 pygame.init()
 
-#create the screen
-SCREEN_WIDTH = 1050
-SCREEN_HEIGHT = 750
-screen = pygame.display.set_mode ((SCREEN_WIDTH,SCREEN_HEIGHT))
+# Create the screen based on the board size
+def init_screen(rows, cols):
+    global SCREEN_WIDTH, SCREEN_HEIGHT,screen
+    SCREEN_WIDTH = cols * cell_size
+    SCREEN_HEIGHT = rows * cell_size + 150
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    return screen
 
 #Caption and Icon
 pygame.display.set_caption('Demo')
@@ -37,6 +40,7 @@ pygame.display.set_icon(icon)
 
 #Map
 def draw_map(rows, cols): 
+    screen.fill((255,255,255))
     for row in range(rows):
         for col in range(cols):
             rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
@@ -98,7 +102,7 @@ def start(board, path):
 
     #print(board.matrix)   
     step_index = 0
-
+    init_screen(board.rows,board.cols)
     #Game loop
     run = True
     while run:
@@ -106,7 +110,6 @@ def start(board, path):
             if event.type == pygame.QUIT:
                 run = False
         
-        screen.fill((255,255,255))
         draw_map(board.rows, board.cols)
         for i in range(board.rows):
             for j in range(board.cols):
@@ -133,20 +136,12 @@ def start(board, path):
         pygame.display.update()
         time.sleep(0.005)  # Adjust delay time for slower motion
         
-        for k in range(1, 7):
-            X_Visual = 250 * k
-            Y_Visual = 550
-            if k >= 4:
-                X_Visual = 250 * (k -3)
-                Y_Visual = 650  
-            hightlight_cell(Y_Visual, X_Visual, k)
+        X_Str = (board.cols - 3) / 2 * cell_size
+        Y_Str = board.rows * cell_size 
+        print(Y_Str)
+        write_String(Y_Str,X_Str,'Cost: ' + str(50))
+        pygame.display.update() 
         
-        # X_Str = 0
-        # Y_Str = 550
-        # write_String(Y_Str,X_Str,'Cost: ' + str(board.get_cost()))
-                    
-        pygame.display.update()
-            
         if step_index == len(path):             
             run = False
                    
