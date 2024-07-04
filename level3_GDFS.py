@@ -1,23 +1,38 @@
-def GBFS(board):
-    '''Greedy Best First Search
-    '''
-    start=board.start_pos
-    goal=board.goal_pos
-    if not start or not goal:
-        return None
-    frontier= [start]
+import heapq
+from queue import Queue
+from level1 import heuristic
+
+def GDFS(board):
+    start = board.start_pos
+    goal = board.goal_pos
+    initial_fuel = board.fuel
+    gas_stations = board.find_gas_locations()
+
+    stack = [(start, initial_fuel, [])]
     visited = set()
-    path = {start: [start]}
-    while frontier:
-        current=frontier.pop()
-        if current== goal:
-            return path[current]
-        if current not in visited:
-            visited.add(current)
-            neighbor=board.get_neighbors(current)
-            neighbor.sort(key= lambda x: heuristic(x,goal), reverse=True)
-            for pos in neighbor:
-                frontier.append(pos)
-                if (pos) not in path:
-                    path[pos] = path[current] + [pos]
-    return None
+
+    while stack:
+        (current_pos, fuel, path) = stack.pop()
+        if current_pos == goal:
+            return path + [current_pos]
+        if (current_pos, fuel) in visited:
+            continue
+        visited.add((current_pos, fuel))
+
+        # Explore neighbors
+        neighbors = board.get_neighbors(current_pos)
+        for neighbor in neighbors:
+            x, y = neighbor
+            new_fuel = fuel - 1 if board.is_valid_move(x, y) else fuel
+            if new_fuel < 0:
+                continue
+            # Refuel at gas stations
+            if board.matrix[x][y][0] == 'F':
+                new_fuel = initial_fuel  # refuel to full capacity
+            new_path = path + [current_pos]
+            stack.append((neighbor, new_fuel, new_path))
+        
+        # Sort stack based on heuristic distance to the goal
+        #stack.sort(key=lambda node: heuristic(node[0], goal))
+
+    return None  # No path found

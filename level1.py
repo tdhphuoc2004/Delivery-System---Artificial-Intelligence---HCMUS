@@ -120,10 +120,10 @@ def IDS(board):
     while True:
         result = DLS(board, depth_limit)
         if result is not None:
-            return result, depth_limit  
+            return result
         depth_limit += 1  # Increase depth limit for next iteration
 
-    return None, depth_limit  
+    return None
 
 def GBFS(board):
     '''Greedy Best First Search
