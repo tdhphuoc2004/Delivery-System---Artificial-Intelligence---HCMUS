@@ -2,7 +2,7 @@ import heapq
 from queue import Queue
 from level1 import heuristic
 
-def GDFS(board):
+def gbfs(board):
     start = board.start_pos
     goal = board.goal_pos
     initial_fuel = board.fuel
@@ -21,6 +21,7 @@ def GDFS(board):
 
         # Explore neighbors
         neighbors = board.get_neighbors(current_pos)
+        print(neighbors)
         for neighbor in neighbors:
             x, y = neighbor
             new_fuel = fuel - 1 if board.is_valid_move(x, y) else fuel

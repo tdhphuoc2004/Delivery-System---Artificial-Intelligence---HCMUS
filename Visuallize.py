@@ -103,6 +103,18 @@ def calculate_total_cost(board, path):
         total_cost += board.get_cost(x, y)
     return total_cost
 
+#Utils functions to intgerate calculations time and fuel remaining to UI 
+def calculate_fuel_remaining(board, path):
+    fuel = board.fuel
+    for cell in path:
+        row, col = cell
+        if board.matrix[row][col].startswith('F'):
+            fuel = board.fuel  # Refuel to full capacity if it's a gas station
+        else:
+            fuel -= 1  # Consume fuel for each step
+        if fuel < 0:
+            return 0  # Ensure fuel doesn't go negative
+    return fuel
 
 #Main function   
 def start(board, path):
@@ -135,20 +147,32 @@ def start(board, path):
         pygame.display.update()
 
         # Animate car along the path and highlight visited cells using highlight_path
+        if path == None:
+            input()
+            pygame.quit()
+            sys.exit()
         if step_index < len(path):
             highlight_path(path[:step_index])  # Highlight visited cells up to current step
             row, col = path[step_index]
             step_index += 1  # Move to the next step in the path
         
         pygame.display.update()
-        time.sleep(0.005)  # Adjust delay time for slower motion
+        time.sleep(0.5)  # Adjust delay time for slower motion
         
+         # Calculate fuel consumption based on path
+        board.fuel = calculate_fuel_remaining(board, path[:step_index])
+
         X_Str = (board.cols - 3) / 2 * cell_size
         Y_Str = board.rows * cell_size 
-        print(Y_Str)
+
+        delivery_time = calculate_total_cost(board, path)
+        target_delivery_time = board.time
+        fuel_remaining = board.fuel
+
         write_String(Y_Str,X_Str,'Time of delivery: ' + str(calculate_total_cost(board, path))) 
         write_String(Y_Str + 20,X_Str,'Target time of delivery: ' + str(board.time))
         write_String(Y_Str + 40,X_Str,'Fuel remaining: ' + str(board.fuel))
+        
         pygame.display.update() 
         
         if step_index == len(path):             
