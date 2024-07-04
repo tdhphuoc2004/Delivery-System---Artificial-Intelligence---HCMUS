@@ -97,6 +97,13 @@ def highlight_path(path):
         
         pygame.display.flip()  # Update the display
 
+def calculate_total_cost(board, path):
+    total_cost = 0
+    for x, y in path:
+        total_cost += board.get_cost(x, y)
+    return total_cost
+
+
 #Main function   
 def start(board, path):
 
@@ -139,7 +146,7 @@ def start(board, path):
         X_Str = (board.cols - 3) / 2 * cell_size
         Y_Str = board.rows * cell_size 
         print(Y_Str)
-        write_String(Y_Str,X_Str,'Cost: ' + str(50))
+        write_String(Y_Str,X_Str,'Cost: ' + str(calculate_total_cost(board, path))) 
         pygame.display.update() 
         
         if step_index == len(path):             
