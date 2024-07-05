@@ -1,14 +1,15 @@
 import Visuallize
 from Board import Board
 from level1 import DFS, UCS, IDS, BFS, GBFS, Asearch
+from level2_ucs import UCS_2
 #from level3_GDFS import GDFS
 
 
 if __name__ == "__main__":
-    matrix,time,fuel = Visuallize.read_file("input1_level1.txt")
+    matrix,time,fuel = Visuallize.read_file("input.txt")
     board = Board(matrix)
     #Call search function here
-    path = DFS(board)
+    path = UCS_2(board,time)
     print(path)
     #Visualize map 
     Visuallize.start(board, path) 

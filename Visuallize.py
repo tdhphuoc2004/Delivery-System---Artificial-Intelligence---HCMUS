@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import time 
 
+step_index = 0
 cell_size = 50
 PATH = (237,208,137)
 F1 = (255,240,213)
@@ -38,7 +39,7 @@ pygame.display.set_caption('Demo')
 icon = pygame.image.load('car.png')
 pygame.display.set_icon(icon)
 
-#Map
+#Map and draw
 def draw_map(rows, cols): 
     screen.fill((255,255,255))
     for row in range(rows):
@@ -46,14 +47,42 @@ def draw_map(rows, cols):
             rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
             pygame.draw.rect(screen, WHITE, rect)
             pygame.draw.rect(screen, BLACK, rect, 1)
+    pygame.display.update()
 
+def draw_board(matrix,rows,cols):
+    for i in range(rows):
+            for j in range(cols):
+                if matrix[i][j] != '0':  
+                    value = matrix[i][j] 
+                    if value == '-1':
+                        highlight_BlockedCell(i,j)
+                    elif value.startswith('S'):
+                        hightlight_SpecialCell(i,j,value,2)
+                    elif value.startswith('G'):
+                        hightlight_SpecialCell(i,j,value,0)
+                    elif value.startswith('F'):
+                        hightlight_SpecialCell(i,j,value,1)   
+                    else:
+                        hightlight_SpecialCell(i,j,value,3)
+    pygame.display.update()
+
+def draw_path(path):
+    global step_index 
+    # Animate car along the path and highlight visited cells using highlight_path
+    if step_index < len(path):
+        highlight_path(path[:step_index])  # Highlight visited cells up to current step
+        row, col = path[step_index]
+        step_index += 1  # Move to the next step in the path
+    pygame.display.update()             
+    time.sleep(0.005)  # Adjust delay time for slower motion
+    
 #Write String
-def write_String(Y,X,string):
+def write_String(Y,X,string,cell):
     font = pygame.font.SysFont(None, 26)
     text = font.render(str(string), True, BLACK)
-    text_rect = text.get_rect(center=(X + cell_size * 3 // 2, Y + cell_size * 3 // 2))
-    screen.blit(text, text_rect)      
-         
+    text_rect = text.get_rect(center=(X + cell_size * cell // 2, Y + cell_size * cell // 2))
+    screen.blit(text, text_rect) 
+                                
 #Highlight    
 def highlight_BlockedCell(row,col):
     rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
@@ -97,6 +126,7 @@ def highlight_path(path):
         
         pygame.display.flip()  # Update the display
 
+#Helper
 def calculate_total_cost(board, path):
     total_cost = 0
     for x, y in path:
@@ -106,9 +136,8 @@ def calculate_total_cost(board, path):
 
 #Main function   
 def start(board, path):
-
-    #print(board.matrix)   
-    step_index = 0
+    a = calculate_total_cost(board,path)
+    print(a)
     init_screen(board.rows,board.cols)
     #Game loop
     run = True
@@ -117,41 +146,27 @@ def start(board, path):
             if event.type == pygame.QUIT:
                 run = False
         
+        #Animated the path on the screen 
         draw_map(board.rows, board.cols)
-        for i in range(board.rows):
-            for j in range(board.cols):
-                if board.matrix[i][j] != '0':  
-                    value = board.matrix[i][j]  
-                    if value == '-1':
-                        highlight_BlockedCell(i,j)
-                    elif value.startswith('S'):
-                        hightlight_SpecialCell(i,j,value,2)
-                    elif value.startswith('G'):
-                        hightlight_SpecialCell(i,j,value,0)
-                    elif value.startswith('F'):
-                        hightlight_SpecialCell(i,j,value,1)   
-                    else:
-                        hightlight_SpecialCell(i,j,value,3)        
-        pygame.display.update()
-
-        # Animate car along the path and highlight visited cells using highlight_path
-        if step_index < len(path):
-            highlight_path(path[:step_index])  # Highlight visited cells up to current step
-            row, col = path[step_index]
-            step_index += 1  # Move to the next step in the path
-        
-        pygame.display.update()
-        time.sleep(0.005)  # Adjust delay time for slower motion
-        
-        X_Str = (board.cols - 3) / 2 * cell_size
-        Y_Str = board.rows * cell_size 
-        print(Y_Str)
-        write_String(Y_Str,X_Str,'Cost: ' + str(calculate_total_cost(board, path))) 
-        pygame.display.update() 
-        
-        if step_index == len(path):             
+        draw_board(board.matrix,board.rows,board.cols)
+        if path != None:
+            cell = 3      
+            draw_path(path)
+            X_Str = (board.cols - 3) / 2 * cell_size
+            Y_Str = board.rows * cell_size 
+            write_String(Y_Str,X_Str,'Cost: ' + str(calculate_total_cost(board, path)),cell) 
+            pygame.display.update()
+            #The condition to end the loop
+            if step_index == len(path):             
+                run = False
+        else:
+            cell = 3
+            X_Str = (board.cols - 3) / 2 * cell_size
+            Y_Str = board.rows * cell_size 
+            write_String(Y_Str,X_Str,'There\'s a no way to get the goal in time.',cell)
+            pygame.display.update() 
             run = False
-                   
+                  
     #Wait
     wait = True
     while wait:
