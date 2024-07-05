@@ -48,6 +48,6 @@ class Board:
         if cell_value in ['G', 'S', '0', '-1']:
             return 1
         elif cell_value.lower().startswith('f') and len(self.matrix[x][y]) > 1:
-            return int(self.matrix[x][y][1:])  # parse the number following 'f'
+            return int(self.matrix[x][y][1:]) + 1  # parse the number following 'f'
         else:
-            return int(cell_value)  # assuming other cells contain string representation of an integer
+            return int(cell_value) + 1  # assuming other cells contain string representation of an integer
