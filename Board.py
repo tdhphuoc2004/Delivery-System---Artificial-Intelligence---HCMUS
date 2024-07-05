@@ -43,6 +43,8 @@ class Board:
         return None
     
     def get_cost(self, x, y):
-        if self.matrix[x][y][0] in ['G','F','S','0','-1']:
+        if self.matrix[x][y][0] in ['F','S','0','-1']:
             return 1
-        return int(self.matrix[x][y])
+        elif self.matrix[x][y][0] in['G']:
+            return 0
+        return int(self.matrix[x][y]) + 1

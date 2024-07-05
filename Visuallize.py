@@ -130,7 +130,10 @@ def highlight_path(path):
 def calculate_total_cost(board, path):
     total_cost = 0
     for x, y in path:
+        print(x,y)
+        print(board.get_cost(x, y))
         total_cost += board.get_cost(x, y)
+        print(total_cost)
     return total_cost
 
 
