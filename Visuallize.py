@@ -134,6 +134,7 @@ def calculate_total_cost(board, path):
         print(board.get_cost(x, y))
         total_cost += board.get_cost(x, y)
         print(total_cost)
+    total_cost = total_cost - 1 #starting positon
     return total_cost
 
 

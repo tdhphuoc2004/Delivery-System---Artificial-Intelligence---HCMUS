@@ -1,11 +1,12 @@
 class Board:
-    def __init__(self, matrix):
+    def __init__(self, matrix, time, fuel):
         self.matrix = matrix
         self.rows = len(matrix)
         self.cols = len(matrix[0])
         self.start_pos = self.find_start_pos()
         self.goal_pos = self.find_goal_pos()
-    
+        self.time = time
+        self.fuel = fuel
     def find_start_pos(self):
         for i in range(self.rows):
             for j in range(self.cols):
@@ -43,8 +44,10 @@ class Board:
         return None
     
     def get_cost(self, x, y):
-        if self.matrix[x][y][0] in ['F','S','0','-1']:
+        cell_value = self.matrix[x][y][0]
+        if cell_value in ['G', 'S', '0', '-1']:
             return 1
-        elif self.matrix[x][y][0] in['G']:
-            return 0
-        return int(self.matrix[x][y]) + 1
+        elif cell_value.lower().startswith('f') and len(self.matrix[x][y]) > 1:
+            return int(self.matrix[x][y][1:]) + 1  # parse the number following 'f'
+        else:
+            return int(cell_value) + 1  # assuming other cells contain string representation of an integer
