@@ -37,7 +37,7 @@ class Board:
         gas_stations = []
         for i in range(self.rows):
             for j in range(self.cols):
-                if self.matrix[i][j][0] == 'F':
+                if self.matrix[i][j][0].startswith('F'): 
                     gas_stations.append((i,j))
         if gas_stations:
             return gas_stations

@@ -74,7 +74,7 @@ def draw_path(path):
         row, col = path[step_index]
         step_index += 1  # Move to the next step in the path
     pygame.display.update()             
-    time.sleep(0.005)  # Adjust delay time for slower motion
+    time.sleep(1)  # Adjust delay time for slower motion
     
 #Write String
 def write_String(Y,X,string,cell):
@@ -128,6 +128,8 @@ def highlight_path(path):
 
 #Helper
 def calculate_total_cost(board, path):
+    if path == None:
+        return 0
     total_cost = 0
     for x, y in path:
         print(x,y)

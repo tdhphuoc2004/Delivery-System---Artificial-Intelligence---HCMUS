@@ -54,37 +54,44 @@ def BFS(board):
                     #came_from[pos]=current
     return None
 
-def DFS(board):
-    '''Depth-First-Search
-    '''
+def DFS(board): 
     start = board.start_pos
     goal = board.goal_pos
-    if not start or not goal:
-        return None 
     
-    # Initialize the stack with the starting position
-    stack = [start]
-    # Set to keep track of visited nodes
-    visited = set()
-    path = {start: [start]}
-    while stack:
-        # Pop a node from the stack
-        current = stack.pop()
-        if current == goal:
-            return path[current]  # Return the path to the goal
+    if not start or not goal:
+        return None  # If start or goal positions are not set, return None
+    
+    visited = set()  # Set to keep track of visited nodes
+    path = []  # List to store the path from start to goal
+    
+    def dfs(node):
+        if node == goal:
+            path.append(node)
+            return True  # Found the goal
+        
+        visited.add(node)  # Mark the current node as visited
+        
+        # Get the neighbors of the current node
+        neighbors = board.get_neighbors(node)
+        
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                if dfs(neighbor):  # Recursively call DFS on the neighbor
+                    path.append(node)
+                    return True
+        
+        return False  # No path found from this node
+    
+    # Start DFS from the starting position
+    dfs(start)
+    
+    if path:
+        path.reverse()  # Reverse the path to get it from start to goal
+        return path
+    
+    return None  # Return None if no path found
 
-        if current not in visited:
-            visited.add(current)  # Mark the current node as visited
-            # Get the neighbors of the current node
-            neighbors = board.get_neighbors(current)
-            for neighbor in neighbors:
-                if neighbor not in visited:
-                    stack.append(neighbor)
-                    if neighbor not in path:
-                        # Update the path to this neighbor
-                        path[neighbor] = path[current] + [neighbor]
 
-    return None  
 def UCS(board):
     '''Uniform-Cost Search'''
     start = board.start_pos
@@ -120,10 +127,10 @@ def IDS(board):
     while True:
         result = DLS(board, depth_limit)
         if result is not None:
-            return result, depth_limit  
+            return result, depth_limit
         depth_limit += 1  # Increase depth limit for next iteration
 
-    return None, depth_limit  
+    return None, depth_limit
 
 def GBFS(board):
     '''Greedy Best First Search
@@ -183,33 +190,34 @@ def Asearch(board):
     return None
 
 def DLS(board, depth_limit):
-    '''Depth-Limited Search'''
+   
     start = board.start_pos
     goal = board.goal_pos
+    
     if not start or not goal:
-        return None 
+        return None  # If start or goal positions are not set, return None
     
-    if depth_limit <= 0:
-        return None  # Reached depth limit without finding goal
+    visited = set()  # Set to keep track of visited nodes
     
-    # Initialize the stack with the starting position
-    stack = [(start, [start])]
-    # Set to keep track of visited nodes
-    visited = set()
-    visited.add(start)
-    
-    while stack:
-        current, path = stack.pop()
+    def dls(node, depth, path):
+        if depth > depth_limit:
+            return None  # Reached depth limit without finding goal
+        
+        if node == goal:
+            return path + [node]  # Return the path to the goal
+        
+        visited.add(node)  # Mark the current node as visited
         
         # Get the neighbors of the current node
-        neighbors = board.get_neighbors(current)
+        neighbors = board.get_neighbors(node)
         
         for neighbor in neighbors:
             if neighbor not in visited:
-                visited.add(neighbor)
-                if neighbor == goal:
-                    return path + [neighbor]  # Return the path to the goal
-                elif len(path) < depth_limit:  # Check depth limit
-                    stack.append((neighbor, path + [neighbor]))
+                result = dls(neighbor, depth + 1, path + [node])
+                if result:
+                    return result
+        
+        return None  # No path found within this depth limit
     
-    return None  # If no path found within this depth limit
+    # Start DLS from the starting position
+    return dls(start, 0, [])
