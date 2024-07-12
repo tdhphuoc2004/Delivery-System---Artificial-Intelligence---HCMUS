@@ -55,9 +55,6 @@ def A_star_search(board):
     for gas_station in gas_stations:
         # Path from start to gas station
         path_to_gas, cost_to_gas = a_star_search(start, gas_station, initial_fuel)
-        if board.get_cost(gas_station[0],gas_station[1]) == 3:
-            print("Path for F2")
-            print(path_to_gas)
         if not path_to_gas:
             continue
 
