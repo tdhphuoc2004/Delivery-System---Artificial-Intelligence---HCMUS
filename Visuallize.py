@@ -2,6 +2,7 @@ import pygame
 import sys
 import numpy as np
 import time 
+import random
 
 step_index = 0
 cell_size = 50
@@ -18,11 +19,16 @@ BLACK = (0,0,0)
 def read_file(filepath):
     with open(filepath, 'r') as file:
         lines = file.readlines()
-    
+
     rows, cols,time,fuel = map(int, lines[0].strip().split())
     array = np.array([line.strip().split() for line in lines[1:]])
     return array,time,fuel
 
+def write_file(filepath,path):
+    with open(filepath,'w') as file:
+        file.write(',  '.join(map(str, path)))
+    
+    
 #Intialize the pygame
 pygame.init()
 
@@ -132,18 +138,13 @@ def calculate_total_cost(board, path):
         return 0
     total_cost = 0
     for x, y in path:
-        print(x,y)
-        print(board.get_cost(x, y))
         total_cost += board.get_cost(x, y)
-        print(total_cost)
     total_cost = total_cost - 1 #starting positon
     return total_cost
 
 
 #Main function   
 def start(board, path):
-    a = calculate_total_cost(board,path)
-    print(a)
     init_screen(board.rows,board.cols)
     #Game loop
     run = True
@@ -182,3 +183,45 @@ def start(board, path):
     pygame.quit
     sys.exit()
     
+def start_lvl4(board, path,vehicle):
+    for i in range(1,vehicle + 1):
+        board.spawn_new_start(str(i))
+        board.spawn_new_goal(str(i))
+        
+    init_screen(board.rows,board.cols)
+    #Game loop
+    run = True
+    while run:
+        for event in pygame.event.get():    
+            if event.type == pygame.QUIT:
+                run = False
+        
+        #Animated the path on the screen 
+        draw_map(board.rows, board.cols)
+        draw_board(board.matrix,board.rows,board.cols)
+        if path != None:
+            cell = 3      
+            draw_path(path)
+            X_Str = (board.cols - 3) / 2 * cell_size
+            Y_Str = board.rows * cell_size 
+            write_String(Y_Str,X_Str,'Cost: ' + str(calculate_total_cost(board, path)),cell) 
+            pygame.display.update()
+            #The condition to end the loop
+            if step_index == len(path):             
+                run = False
+        else:
+            cell = 3
+            X_Str = (board.cols - 3) / 2 * cell_size
+            Y_Str = board.rows * cell_size 
+            write_String(Y_Str,X_Str,'There\'s a no way to get the goal in time.',cell)
+            pygame.display.update() 
+            run = False
+                  
+    #Wait
+    wait = True
+    while wait:
+        for event in pygame.event.get():    
+            if event.type == pygame.QUIT:
+                wait = False
+    pygame.quit
+    sys.exit()
