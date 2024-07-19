@@ -20,12 +20,12 @@ if __name__ == "__main__":
     # Visuallize.start(board, path) 
 
 
-    matrix,time,fuel = Visuallize.read_file("input1_level2.txt")
+    matrix,time,fuel = Visuallize.read_file("input1_level2_5.txt")
     board = Board(matrix, time, fuel)
     #Call search function here
-    path =  DFS(board)
+    path =  Asearch2(board)
     Visuallize.write_file('output.txt',path)
     #Visualize map 
     #print(limit)
     vehicle = random.randint(1,9)
-    Visuallize.start_lvl4(board, path,vehicle) 
+    Visuallize.start(board, path) 
