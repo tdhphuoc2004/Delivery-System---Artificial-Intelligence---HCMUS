@@ -1,6 +1,42 @@
 import heapq
 from queue import Queue
-from level1 import heuristic,reconstruct_path
+from Utils import createState
+from level1 import reconstruct_path 
+
+def heuristic(pos, goal):
+  """
+  Calculates the Manhattan distance heuristic between two positions.
+
+  Args:
+      pos: Starting position (tuple of x, y coordinates).
+      goal: Goal position (tuple of x, y coordinates).
+
+  Returns:
+      The Manhattan distance between the positions.
+  """
+
+  x1, y1 = pos
+  x2, y2 = goal
+  return abs(x1 - x2) + abs(y1 - y2)
+
+def is_occupied_by_other_vehicle(cell, paths, current_vehicle):
+  """
+  Checks if a cell is occupied by another vehicle (excluding the current vehicle).
+
+  Args:
+      cell: The position to check (tuple of x, y coordinates).
+      paths: List of paths for all vehicles.
+      current_vehicle: Index of the currently processed vehicle (0-based).
+
+  Returns:
+      True if the cell is occupied by another vehicle, False otherwise.
+  """
+
+  for i, path in enumerate(paths):
+    if i != current_vehicle and path is not None and cell in path:
+      return True
+  return False
+
 
 def a_star_search(board, start, goal, initial_fuel):
     frontier = [(0, start, initial_fuel)]
@@ -33,11 +69,8 @@ def a_star_search(board, start, goal, initial_fuel):
 
     return None, float('inf')
 
-def A_star_search(board):
+def A_star_search(board, goal, initial_fuel, gas_stations):
     start = board.start_pos
-    goal = board.goal_pos
-    initial_fuel = board.fuel
-    gas_stations = board.find_gas_locations()
 
     if not start or not goal:
         return None
@@ -73,57 +106,46 @@ def A_star_search(board):
     return shortest_path if shortest_path else None
 
 
+def A_star_search_lv4(boards):
+  """
+  Performs A* search for multiple vehicles on separate boards with turn-based movement,
+  handling collision avoidance and Level 4 cost calculations. The loop continues until
+  all vehicles reach their goals 'G'.
 
-def manhattan_distance(pos1, pos2):
-    x1, y1 = pos1
-    x2, y2 = pos2
-    return abs(x1 - x2) + abs(y1 - y2)
+  Args:
+      boards: A list of Board objects, each representing the environment for a vehicle.
 
-def gbfs(board):
-    start = board.start_pos
-    goal = board.goal_pos
+  Returns:
+      A list of paths, one for each vehicle (may contain None if no path is found).
+  """
+
+  paths = [None] * len(boards)  # Initialize list to store paths for each vehicle
+
+  gas_stations = boards[0].find_gas_locations
+  # Process vehicles in the order they appear in the boards list
+  for i, board in enumerate(boards):
+    start_pos = board.start_pos  # Access pre-computed start position
+    goal = board.goal_pos  # Access pre-computed goal position
     initial_fuel = board.fuel
     gas_stations = board.find_gas_locations()
 
-    # Priority queue to store (heuristic, position, fuel, path)
-    pq = []
-    heapq.heappush(pq, (manhattan_distance(start, goal), start, initial_fuel, [start]))
-    visited = set()
+    if not start_pos or not goal:
+      continue
 
-    best_path = None  # Initialize the best path found
+    path = A_star_search(board,goal, initial_fuel, gas_stations)
+    paths[i] = path
 
-    while pq:
-        _, current_pos, fuel, path = heapq.heappop(pq)
+    # Update game state for all other vehicles based on the current vehicle's movement
+    # if path:
+    #   for other_board in boards:
+    #     if other_board != board:  # Skip the current board
+    #       other_board.update_board_state(path, start_pos, i)  # Update based on current vehicle's path
 
-        # Check if current position is the goal and path is viable
-        if current_pos == goal and fuel >= manhattan_distance(current_pos, goal):
-            print("Path found:", path)
-            return path  # Return the path when goal is reached and reachable
+      # Check if all vehicles reached their goals (all start_pos become None)
+  return paths
 
-        if (current_pos, fuel) in visited:
-            continue
 
-        visited.add((current_pos, fuel))
 
-        for neighbor in board.get_neighbors(current_pos):
-            x, y = neighbor
-            new_fuel = fuel - 1  # Fuel decreases by 1 for each move
-            if new_fuel < 0:
-                continue
 
-            if board.matrix[x][y][0].startswith('f') or board.matrix[x][y][0].startswith('F'):
-                new_fuel = initial_fuel  # Refuel to full capacity
-                new_path = path + [neighbor]
-                new_distance = manhattan_distance(neighbor, goal)
-                heapq.heappush(pq, (new_distance, neighbor, new_fuel, new_path))
-            else:
-                new_path = path + [neighbor]
-                new_distance = manhattan_distance(neighbor, goal)
-                heapq.heappush(pq, (new_distance, neighbor, new_fuel, new_path))
 
-        # Update best_path if the current path is longer and valid
-        if best_path is None or len(path) > len(best_path):
-            best_path = path
 
-    print("Best path found:", best_path)
-    return best_path

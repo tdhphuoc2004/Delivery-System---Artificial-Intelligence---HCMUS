@@ -250,7 +250,7 @@ def start(board, path):
     pygame.quit
     sys.exit()
     
-def start_lvl4(board, path,vehicle):
+def start_lv4(board, path,vehicle):
     for i in range(1,vehicle + 1):
         board.spawn_new_start(str(i))
         board.spawn_new_goal(str(i))
