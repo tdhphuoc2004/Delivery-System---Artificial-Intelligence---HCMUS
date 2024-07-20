@@ -19,12 +19,13 @@ if __name__ == "__main__":
     #print(limit)
     vehicles = 3 
     Boards = createState(board, vehicles) 
-    coordinate = (0,1)
-    # new_board = generateNewState(Boards[0], 0, Boards[0].start_pos, coordinate)
+    coordinate = (1,3)
+    new_board = generateNewState(Boards[1], 1,  coordinate)
+    new_board.print_board()
     # for row in new_board.matrix:
     #     print(f"\t\t{row}")  # Print each row of the matrix with indentation
 
-    print_boards(Boards)
+    #print_boards(Boards)
    # Visuallize.start_lv4()
 
     

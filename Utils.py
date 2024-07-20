@@ -15,7 +15,13 @@ def createState(board, vehicleNums):
 def generateNewState(board, vehicle_id, moveto):
   if board.ID != vehicle_id:
     return None  # Return None if IDs don't match
-  board.find_vehicles(moveto, vehicle_id)
+  board.move_vehicle(moveto, str(vehicle_id))
+  vehicle_location = board.find_vehicle(str(vehicle_id))
+  x_coord, y_coord = vehicle_location
+  if (x_coord == board.goal_pos[0] and y_coord == board.goal_pos[1]):
+    board.delete_goal(str(vehicle_id))
+    board.spawn_new_start(str(vehicle_id))
+    board.spawn_new_goal(str(vehicle_id))
 
   return board
 

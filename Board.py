@@ -77,7 +77,7 @@ class Board:
         
         if available_positions:
             new_start_pos = random.choice(available_positions)
-            self.matrix[new_start_pos[0]][new_start_pos[1]] = 'G' + vehicle
+            self.matrix[new_start_pos[0]][new_start_pos[1]] = 'S' + vehicle
             return new_start_pos
         return None
     
