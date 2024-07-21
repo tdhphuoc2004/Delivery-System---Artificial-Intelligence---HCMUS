@@ -9,7 +9,7 @@ class Board:
         self.goal_pos = self.find_goal_pos()
         self.time = time
         self.fuel = fuel
-        self.ID = 0 
+        self.ID = 0
     def find_start_pos(self, vehicle = ''):
         #default find G
         for i in range(self.rows):
@@ -104,7 +104,7 @@ class Board:
         #default find S
         for i in range(self.rows):
             for j in range(self.cols):
-                if self.matrix[i][j] == 'C' + vehicle:
+                if self.matrix[i][j] == 'S' + vehicle:
                     return (i, j)
         return None
     
@@ -116,7 +116,7 @@ class Board:
         if (not self.is_valid_move(move_to[0], move_to[1])): 
             return None
         self.matrix[x][y] = '0'
-        self.matrix[move_to[0]][move_to[1]] = 'C' + vehicle
+        self.matrix[move_to[0]][move_to[1]] = 'S' + vehicle
 
     def get_cost_lv4(self, x, y, prev_x=None, prev_y=None):
         """
