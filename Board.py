@@ -71,6 +71,7 @@ class Board:
             for j in range(self.cols):
                 if self.matrix[i][j] == 'S' + vehicle:  # Check if the cell is empty
                     self.matrix[i][j] = '0'
+                    self.goal_pos = None 
         return None
 
     def spawn_new_start(self,vehicle):
@@ -86,6 +87,7 @@ class Board:
             new_start_pos = random.choice(available_positions)
             self.matrix[new_start_pos[0]][new_start_pos[1]] = 'S' + vehicle
             self.record_start_and_goal(new_start_pos, None)
+            self.start_pos = new_start_pos
             return new_start_pos
         return None
     
@@ -102,6 +104,7 @@ class Board:
             new_goal_pos = random.choice(available_positions)
             self.matrix[new_goal_pos[0]][new_goal_pos[1]] = 'G' + vehicle
             self.record_start_and_goal(None, new_goal_pos)
+            self.goal_pos = new_goal_pos
             return new_goal_pos
         return None
 

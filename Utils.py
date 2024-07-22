@@ -133,6 +133,7 @@ def generateNewState(board, vehicle_id, moveto):
                 board.delete_goal(str(vehicle_id))
                 board.spawn_new_start(str(vehicle_id))
                 board.spawn_new_goal(str(vehicle_id))
+                return 
         board.start_pos = moveto
     return board
 
@@ -159,3 +160,25 @@ def print_boards(boards):
         print(f"\tTime: {board.time}")
         print(f"\tFuel: {board.fuel}")
         print()  # Print an empty line for better readability between boards
+
+def print_vehicle_status(board):
+    """
+    Prints the status of the vehicle including its index, remaining fuel, time, and current position.
+
+    Args:
+        board: The Board object representing the environment.
+        vehicle_index: The index of the vehicle whose status is being printed.
+
+    Returns:
+        None
+    """
+   
+    print(f"Vehicle Index: {board.ID}")
+    print(f"Fuel Remaining: {board.fuel}")
+    print(f"Time: {board.time}")
+    print(f"Current Position: {board.current_pos}")
+    # Optionally, print the state of the board
+    print("State of the board after restoring:")
+    board.print_board()
+    print("\n")
+    print(f"================================================================")
