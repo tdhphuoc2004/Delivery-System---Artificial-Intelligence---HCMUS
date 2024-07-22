@@ -124,18 +124,18 @@ def A_star_search_lv4(boards):
 
             # Construct the path
             path = A_star_search(board, goal_pos, initial_fuel, gas_stations)
-            path.pop(0)
             if path is None:
                 print(f"Vehicle {vehicle_index} cannot find a path to the goal.")
-        
-            print("Path found in A*:", path)
-            move_to = path.pop(0)
-
-            # Generate a new state
-            print(f"Move To: {move_to}")
-            if move_to is None:
                 generateNewState(board, vehicle_index, None)
+
+
             else:
+                path.pop(0)
+                print("Path found in A*:", path)
+                move_to = path.pop(0)
+
+                # Generate a new state
+                print(f"Move To: {move_to}")
                 generateNewState(board, vehicle_index, move_to)
 
             # # Restore vehicle positions and print status
