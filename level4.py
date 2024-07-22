@@ -2,7 +2,7 @@ import heapq
 from queue import Queue
 from Utils import createState
 from level1 import reconstruct_path 
-from Utils import createState, generateNewState, print_boards
+from Utils import createState, generateNewState, print_boards, restore_goal_positions, find_and_set_other_vehicles, restore_vehicle_positions
 def heuristic(pos, goal):
   """
   Calculates the Manhattan distance heuristic between two positions.
@@ -18,24 +18,6 @@ def heuristic(pos, goal):
   x1, y1 = pos
   x2, y2 = goal
   return abs(x1 - x2) + abs(y1 - y2)
-
-def is_occupied_by_other_vehicle(cell, paths, current_vehicle):
-  """
-  Checks if a cell is occupied by another vehicle (excluding the current vehicle).
-
-  Args:
-      cell: The position to check (tuple of x, y coordinates).
-      paths: List of paths for all vehicles.
-      current_vehicle: Index of the currently processed vehicle (0-based).
-
-  Returns:
-      True if the cell is occupied by another vehicle, False otherwise.
-  """
-
-  for i, path in enumerate(paths):
-    if i != current_vehicle and path is not None and cell in path:
-      return True
-  return False
 
 
 def a_star_search(board, start, goal, initial_fuel):
@@ -71,8 +53,6 @@ def a_star_search(board, start, goal, initial_fuel):
 
 def A_star_search(board, goal, initial_fuel, gas_stations):
     start = board.start_pos
-    print("board start pos:", board.start_pos)
-    print("board goal pos:", goal)
     if not start or not goal:
         return None
 
@@ -110,17 +90,17 @@ def A_star_search_lv4(boards):
     """
     Performs A* search for multiple vehicles on separate boards with turn-based movement,
     handling collision avoidance and Level 4 cost calculations. The loop continues until
-    the main vehicle reach its goal 'G'.
+    the main vehicle reaches its goal 'G'.
 
     Args:
         boards: A list of Board objects, each representing the environment for a vehicle.
 
     Returns:
-        A list of paths, one for each vehicle (may contain None if no path is found).
+        None
     """
-
-    paths = [None] * len(boards)  # Initialize list to store paths for each vehicle
-    vehicle_paths = [[] for _ in boards]  # Store the planned path for each vehicle
+    
+    # Initialize paths storage
+    vehicle_paths = [[] for _ in boards]
     gas_stations = boards[0].find_gas_locations()
 
     while True:
@@ -134,36 +114,54 @@ def A_star_search_lv4(boards):
             board = boards[vehicle_index]
             initial_fuel = board.fuel
             goal_pos = board.goal_pos
+            carID = board.ID
+            print("================================================================")
+            print("Start_pos:", board.start_pos)
+             # Find and set other vehicles' positions
+            str_vehicle_index = str(vehicle_index)
+            find_and_set_other_vehicles(board, str_vehicle_index)
+            print ("state before restoring:")
+            board.print_board()
             if not vehicle_paths[vehicle_index]:
                 # Plan a new path if there's no current path
                 path = A_star_search(board, goal_pos, initial_fuel, gas_stations)
                 if path is None:
                     print(f"Vehicle {vehicle_index} cannot find a path to the goal.")
-                    return paths
+                    continue  # Skip to the next vehicle if no path is found
                 vehicle_paths[vehicle_index] = path
 
             # Execute one step of the path
             if vehicle_paths[vehicle_index]:
+                print("Path found in A*:", vehicle_paths[vehicle_index])
                 move_to = vehicle_paths[vehicle_index].pop(0)
-                generateNewState(board, vehicle_index, move_to)
-                paths[vehicle_index] = vehicle_paths[vehicle_index]
+                # if (move_to == boards[vehicle_index].start_pos): 
+                #      move_to = vehicle_paths[vehicle_index].pop(0)
+                #      print('After not move to start:', move_to)
 
-                # Print the state of the board after the move
-                print("================================================================")
-                print(f"Vehicle Index: {vehicle_index}")
+               
                 print(f"Move To: {move_to}")
+                if move_to is None:
+                    generateNewState(board, vehicle_index, None)
+                else:
+                    generateNewState(board, vehicle_index, move_to)
+              
+                # Print the state of the board after the move
+                restore_vehicle_positions(boards)
+                print(f"Vehicle Index: {vehicle_index}")
                 print(f"Fuel Remaining: {board.fuel}")
                 print(f"Time: {board.time}")
-                print("State of the board after one step:")
-                board.print_board()
+                print(f"Current pos:", {board.current_pos})
+                # print("State of the board after one step:")
+                # board.print_board()
                 print("\n")
                 print("================================================================")
 
+                # Restore start and goal positions for all vehicles
+                restore_goal_positions(boards, board, len(boards))
+                # print("State of the board after one step and restore:")
+                # board.print_board()
                 # Pass the updated state to the next vehicle
                 if vehicle_index < len(boards) - 1:
-                    #new_board = board.copy()
-                    # print("================================================================")
-                    # new_board.print_board()
                     boards[vehicle_index + 1].matrix = board.matrix 
 
                 # Re-check the main vehicle's position after every move
@@ -171,5 +169,3 @@ def A_star_search_lv4(boards):
                 x_coord, y_coord = main_vehicle_location
                 if x_coord == boards[0].goal_pos[0] and y_coord == boards[0].goal_pos[1]:
                     break
-
-    return paths

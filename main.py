@@ -11,8 +11,9 @@ from level2 import Asearch2,UCS_2
 from level4 import A_star_search_lv4
 if __name__ == "__main__":
 
-    matrix,time,fuel = Visuallize.read_file("input_1_level4_1.txt")
+    matrix,time,fuel = Visuallize.read_file("input_1_level_4_1.txt")
     board = Board(matrix, time, fuel)
+    initialize_board = board.copy() # Pass to visualize to draw 
     #Call search function here
 
     #Visualize map 
@@ -23,13 +24,6 @@ if __name__ == "__main__":
     # new_board = generateNewState(Boards[1], 1,  coordinate)
     # new_board.print_board()
     print_boards(Boards)
-    paths = A_star_search_lv4(Boards)
-    print(paths)
-    # for row in new_board.matrix:
-    #     print(f"\t\t{row}")  # Print each row of the matrix with indentation
-
-
-   # Visuallize.start_lv4()
-
-    
+    A_star_search_lv4(Boards)
+    Visuallize.start_lv4_clone(Boards, initialize_board)
 

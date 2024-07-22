@@ -9,8 +9,84 @@ def createState(board, vehicleNums):
         board_element.goal_pos = board.find_goal_pos(str(i))
         board_element.ID = i
         board_element.matrix[_start_pos[0]][_start_pos[1]] = 'S' + str(i)
+        board_element.current_pos = _start_pos
         boards.append(board_element)
     return boards 
+
+def restore_goal_positions(boards, board, numbervehicles):
+    """
+    Restore the start and goal positions for all vehicles on the board if they are not occupied.
+
+    Args:
+        boards: List of board objects for each vehicle.
+        board: The board object representing the current state.
+        numbervehicles: The total number of vehicles.
+    """
+
+    # Restore goal positions
+    for vehicle_id in range(numbervehicles):
+        goal_pos = boards[vehicle_id].goal_pos
+        #print ("End pos:", goal_pos)
+        if goal_pos and board.matrix[goal_pos[0]][goal_pos[1]] == '0':
+            board.matrix[goal_pos[0]][goal_pos[1]] = 'G' + str(vehicle_id)
+
+
+def find_and_set_other_vehicles(board, current_vehicle_id):
+    """
+    Sets cells occupied by vehicles other than the one currently being processed to -1.
+
+    Args:
+        board: The Board object representing the environment.
+        current_vehicle_id: The ID of the currently processed vehicle.
+
+    Returns:
+        None
+    """
+    for i in range(board.rows):
+        for j in range(board.cols):
+            cell_value = board.matrix[i][j]
+            if cell_value == 'S': 
+                vehicle_id = '0'  # Main vehicle ID
+            elif cell_value.startswith('S'):
+                vehicle_id = cell_value[1:]  # Extract vehicle ID from 'S{ID}'
+            else:
+                continue  # Skip non-vehicle cells
+            
+            # Set cell to -1 if it's occupied by another vehicle
+            if vehicle_id != current_vehicle_id:
+                board.matrix[i][j] = '-1'
+
+def restore_vehicle_positions(boards):
+    """
+    Restores the positions of all vehicles to their original locations
+    based on the recorded_start_goal.
+
+    Args:
+        boards: A list of Board objects representing the environments for multiple vehicles.
+
+    Returns:
+        None
+    """
+    for index, board in enumerate(boards):
+        # Use recorded_start_goal to get the original position of each vehicle
+        recorded_pos = board.current_pos
+        
+        if recorded_pos:
+            # Restore the position in the matrix
+            x, y = recorded_pos
+            if board.ID == 0:
+                board.matrix[x][y] = 'S'  # Main vehicle is represented as 'S'
+            else:
+                board.matrix[x][y] = f'S{board.ID}'  # Other vehicles are represented as 'S{ID}'
+
+            # # Update the current position of the vehicle
+            # board.current_pos = recorded_pos
+
+            print(f"Restored vehicle {board.ID} to position {recorded_pos}")
+        else:
+            print(f"No recorded position for vehicle {board.ID}")
+
+    
 
 def generateNewState(board, vehicle_id, moveto):
     if board.ID != vehicle_id:
@@ -28,33 +104,37 @@ def generateNewState(board, vehicle_id, moveto):
         return None  # Handle the case where the vehicle is not found
 
     x_coord, y_coord = vehicle_location
-    new_x, new_y = moveto
 
-    # Calculate the cost of the move
-    move_cost = board.get_cost_lv4(new_x, new_y, x_coord, y_coord)
-    
-    if board.ID == 0:
-        # Move main vehicle without changing start/goal positions
-        board.move_vehicle(moveto)
-        board.fuel -= 1  # Consume 1 fuel unit for the move
-        board.time -= move_cost  # Subtract time cost for the move
-
+    if moveto is None:
+        # Convert the position the vehicle is staying to -1
+        board.matrix[x_coord][y_coord] = '-1'
     else:
-        # Move other vehicles and check goal conditions
-        board.move_vehicle(moveto, str(vehicle_id))
-        board.fuel -= 1  # Consume 1 fuel unit for the move
-        board.time -= move_cost  # Subtract time cost for the move
-        
-        # Check if the vehicle reached its goal
-        vehicle_location = board.find_vehicle(str(vehicle_id))
-        x_coord, y_coord = vehicle_location
-        if x_coord == board.goal_pos[0] and y_coord == board.goal_pos[1]:
-            board.delete_goal(str(vehicle_id))
-            board.spawn_new_start(str(vehicle_id))
-            board.spawn_new_goal(str(vehicle_id))
-    
-    return board
+        new_x, new_y = moveto
 
+        # Calculate the cost of the move
+        move_cost = board.get_cost_lv4(new_x, new_y, x_coord, y_coord)
+
+        if board.ID == 0:
+            # Move main vehicle without changing start/goal positions
+            board.move_vehicle(moveto)
+            board.fuel -= 1  # Consume 1 fuel unit for the move
+            board.time -= move_cost  # Subtract time cost for the move
+            board.current_pos = (new_x, new_y)
+        else:
+            # Move other vehicles and check goal conditions
+            board.move_vehicle(moveto, str(vehicle_id))
+            board.fuel -= 1  # Consume 1 fuel unit for the move
+            board.time -= move_cost  # Subtract time cost for the move
+            board.current_pos = (new_x, new_y)
+            # Check if the vehicle reached its goal
+            vehicle_location = board.find_vehicle(str(vehicle_id))
+            x_coord, y_coord = vehicle_location
+            if x_coord == board.goal_pos[0] and y_coord == board.goal_pos[1]:
+                board.delete_goal(str(vehicle_id))
+                board.spawn_new_start(str(vehicle_id))
+                board.spawn_new_goal(str(vehicle_id))
+        board.start_pos = moveto
+    return board
 
 
 def print_boards(boards):

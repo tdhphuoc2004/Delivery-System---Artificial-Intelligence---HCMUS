@@ -48,6 +48,12 @@ def init_screen(rows, cols):
 pygame.display.set_caption('Demo')
 icon = pygame.image.load('car.png')
 pygame.display.set_icon(icon)
+car_icons = []
+main_vehicle_icon = pygame.image.load('car.png')
+car_icons.append(main_vehicle_icon)
+for i in range(1, 10):
+    car_icon = pygame.image.load(f'car{i}.png')
+    car_icons.append(car_icon)
 
 #Map and draw
 def draw_map(rows, cols): 
@@ -292,3 +298,71 @@ def start_lv4(board, path,vehicle):
                 wait = False
     pygame.quit
     sys.exit()
+
+
+def highlight_multiple_path(path, icon):
+    for step in path:
+        row, col = step
+        
+        # Highlight cell with color
+        rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+        pygame.draw.rect(screen, PATH, rect)
+        pygame.draw.rect(screen, BLACK, rect, 1)
+        
+        # Center icon on the cell if icon is provided
+        if icon:
+            icon_rect = icon.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
+            screen.blit(icon, icon_rect)
+        
+        pygame.display.flip()  # Update the display
+def draw_multiple_path(list_of_recorded_moves):
+    step_indices = [0] * len(list_of_recorded_moves)  # Initialize step index for each vehicle
+
+    while any(step_index < len(path) for step_index, path in zip(step_indices, list_of_recorded_moves)):
+        for vehicle_index, path in enumerate(list_of_recorded_moves):
+            if step_indices[vehicle_index] < len(path):
+                icon = car_icons[vehicle_index] if vehicle_index < len(car_icons) else None
+                highlight_multiple_path(path[:step_indices[vehicle_index]], icon)
+                
+                # Highlight next step for the current vehicle
+                row, col = path[step_indices[vehicle_index]]
+                step_indices[vehicle_index] += 1  # Move to the next step in the path
+                
+                pygame.display.update()
+                time.sleep(1)  # Adjust delay time for slower motion
+
+def start_lv4_clone(boards, initialize_board):
+    rows = initialize_board.rows
+    cols = initialize_board.cols 
+    list_of_recorded_move =[]
+    list_of_recorded_start_goal = []
+
+    numVehicles = len(boards)
+    for i in range(numVehicles):
+        list_of_recorded_move.append(boards[i].recorded_move)
+        list_of_recorded_start_goal.append(boards[i].recorded_start_goal)
+    print ("Recorded paths:", list_of_recorded_move)
+    print ("recorded start goal:", list_of_recorded_start_goal)
+
+    init_screen(rows, cols)
+    #Game loop
+    # run = True
+    # while run:
+    #     for event in pygame.event.get():    
+    #         if event.type == pygame.QUIT:
+    #             run = False
+    draw_map(rows, cols)
+    draw_board(initialize_board.matrix, rows, cols)
+    if list_of_recorded_move:
+        draw_multiple_path(list_of_recorded_move)
+        if all(step_index >= len(path) for path in list_of_recorded_move):
+                run = False
+    wait = True
+    while wait:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                wait = False
+    pygame.quit()
+    sys.exit()
+
+      
