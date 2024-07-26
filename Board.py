@@ -9,11 +9,16 @@ class Board:
         self.goal_pos = self.find_goal_pos()
         self.time = time
         self.fuel = fuel
-    def find_start_pos(self):
+        self.ID = 0
+        self.inital_fuel = fuel 
+        self.recorded_move = []
+        self.recorded_start_goal = {} 
+        self.current_pos = None 
+    def find_start_pos(self, vehicle = ''):
         #default find G
         for i in range(self.rows):
             for j in range(self.cols):
-                if self.matrix[i][j] == 'S':
+                if self.matrix[i][j] == 'S' + vehicle:
                     return (i, j)
         return None
 
@@ -33,10 +38,13 @@ class Board:
                 neighbors.append((new_x, new_y))
         return neighbors
     
+    # def is_valid_move(self, x, y):
+    #         print("is_valid_move:", self.ID, "x:", x, "y:", y, "value:", self.matrix[x][y] if )
+    #         return 0 <= x < self.rows and 0 <= y < self.cols and (self.matrix[x][y] != '-1' and not self.matrix[x][y].startswith('S'))
+            
     def is_valid_move(self, x, y):
             return 0 <= x < self.rows and 0 <= y < self.cols and self.matrix[x][y] != '-1'
-    
-    
+
     def find_gas_locations(self):
         gas_stations = []
         for i in range(self.rows):
@@ -61,8 +69,9 @@ class Board:
         #vehicle: string from "1" to "9"
         for i in range(self.rows):
             for j in range(self.cols):
-                if self.matrix[i][j] == 'G' + vehicle:  # Check if the cell is empty
+                if self.matrix[i][j] == 'S' + vehicle:  # Check if the cell is empty
                     self.matrix[i][j] = '0'
+                    self.goal_pos = None 
         return None
 
     def spawn_new_start(self,vehicle):
@@ -76,7 +85,9 @@ class Board:
         
         if available_positions:
             new_start_pos = random.choice(available_positions)
-            self.matrix[new_start_pos[0]][new_start_pos[1]] = 'G' + vehicle
+            self.matrix[new_start_pos[0]][new_start_pos[1]] = 'S' + vehicle
+            self.record_start_and_goal(new_start_pos, None)
+            self.start_pos = new_start_pos
             return new_start_pos
         return None
     
@@ -92,6 +103,8 @@ class Board:
         if available_positions:
             new_goal_pos = random.choice(available_positions)
             self.matrix[new_goal_pos[0]][new_goal_pos[1]] = 'G' + vehicle
+            self.record_start_and_goal(None, new_goal_pos)
+            self.goal_pos = new_goal_pos
             return new_goal_pos
         return None
 
@@ -109,11 +122,43 @@ class Board:
     
     def move_vehicle(self, move_to, vehicle = ''):
         #move vehicle
-        #vehicle: string from "1" to "9" default is for S
+        #vehicle: string from "0" to "9" default is for S
         #current and move_to: (x,y)value
         x, y = self.find_vehicle(vehicle)
+        if (not self.is_valid_move(move_to[0], move_to[1])): 
+            print("Id not move:", self.ID)
+            return None
         self.matrix[x][y] = '0'
         self.matrix[move_to[0]][move_to[1]] = 'S' + vehicle
+        self.recorded_move.append(move_to)
 
+        
+    def copy(self):
+        """Creates a deep copy of the Board object.
 
+        Returns:
+            A new Board object with a copy of the original board's data.
+        """
+
+        # Deep copy the matrix using list comprehension
+        new_matrix = [[cell for cell in row] for row in self.matrix]
+
+        # Create a new Board object with copied data
+        return Board(new_matrix, self.time, self.fuel)
     
+    def record_start_and_goal(self, start_pos=None, goal_pos=None):
+        """
+        Records the start and goal positions for a vehicle.
+        """
+        if start_pos:
+            self.recorded_start_goal[start_pos] = goal_pos
+        elif goal_pos:
+            for start in self.recorded_start_goal:
+                if self.recorded_start_goal[start] is None:
+                    self.recorded_start_goal[start] = goal_pos
+                    break
+
+
+      
+
+        

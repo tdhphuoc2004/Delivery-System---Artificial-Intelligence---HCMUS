@@ -2,6 +2,36 @@ import heapq
 from queue import Queue
 from level1 import heuristic,reconstruct_path
 
+def a_star_search(board, start, goal, initial_fuel):
+    frontier = [(0, start, initial_fuel)]
+    came_from = {start: None}
+    cost_so_far = {start: 0}
+    fuel_at_node = {start: initial_fuel}
+
+    while frontier:
+        current_cost, current, fuel = heapq.heappop(frontier)
+
+        if current == goal:
+            return reconstruct_path(came_from, start, goal), cost_so_far[goal]
+
+        for neighbor in board.get_neighbors(current):
+            new_cost = cost_so_far[current] + board.get_cost(neighbor[0], neighbor[1])
+            new_fuel = fuel - 1
+
+            if board.matrix[neighbor[0]][neighbor[1]][0] == 'F':
+                new_fuel = initial_fuel
+
+            if new_fuel <= 0:
+                continue
+
+            if (neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]) and new_fuel >= 0:
+                cost_so_far[neighbor] = new_cost
+                fuel_at_node[neighbor] = new_fuel
+                priority = new_cost + heuristic(neighbor, goal)
+                heapq.heappush(frontier, (priority, neighbor, new_fuel))
+                came_from[neighbor] = current
+
+    return None, float('inf')
 
 def A_star_search(board):
     start = board.start_pos
@@ -12,39 +42,8 @@ def A_star_search(board):
     if not start or not goal:
         return None
 
-    def a_star_search(start, goal, initial_fuel):
-        frontier = [(0, start, initial_fuel)]
-        came_from = {start: None}
-        cost_so_far = {start: 0}
-        fuel_at_node = {start: initial_fuel}
-
-        while frontier:
-            current_cost, current, fuel = heapq.heappop(frontier)
-
-            if current == goal:
-                return reconstruct_path(came_from, start, goal), cost_so_far[goal]
-
-            for neighbor in board.get_neighbors(current):
-                new_cost = cost_so_far[current] + board.get_cost(neighbor[0], neighbor[1])
-                new_fuel = fuel - 1
-
-                if board.matrix[neighbor[0]][neighbor[1]][0] == 'F':
-                    new_fuel = initial_fuel
-
-                if new_fuel <= 0:
-                    continue
-
-                if (neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]) and new_fuel >= 0:
-                    cost_so_far[neighbor] = new_cost
-                    fuel_at_node[neighbor] = new_fuel
-                    priority = new_cost + heuristic(neighbor, goal)
-                    heapq.heappush(frontier, (priority, neighbor, new_fuel))
-                    came_from[neighbor] = current
-
-        return None, float('inf')
-
     # First, try to find a path directly from start to goal with the initial fuel
-    path, total_cost = a_star_search(start, goal, initial_fuel)
+    path, total_cost = a_star_search(board, start, goal, initial_fuel)
     if path:
         return path
 
@@ -54,12 +53,12 @@ def A_star_search(board):
 
     for gas_station in gas_stations:
         # Path from start to gas station
-        path_to_gas, cost_to_gas = a_star_search(start, gas_station, initial_fuel)
+        path_to_gas, cost_to_gas = a_star_search(board, start, gas_station, initial_fuel)
         if not path_to_gas:
             continue
 
         # Path from gas station to goal after refueling
-        path_from_gas, cost_from_gas = a_star_search(gas_station, goal, initial_fuel)
+        path_from_gas, cost_from_gas = a_star_search(board, gas_station, goal, initial_fuel)
         if not path_from_gas:
             continue
 
