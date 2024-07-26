@@ -2,7 +2,7 @@ import heapq
 from queue import Queue
 from Utils import createState
 from level1 import reconstruct_path 
-from Utils import createState, generateNewState, print_boards, restore_goal_positions, find_and_set_other_vehicles, restore_vehicle_positions, print_vehicle_status
+from Utils import createState, generateNewState, restore_goal_positions, find_and_set_other_vehicles, restore_vehicle_positions, print_vehicle_status
 def heuristic(pos, goal):
   """
   Calculates the Manhattan distance heuristic between two positions.
@@ -52,6 +52,9 @@ def a_star_search(board, start, goal, initial_fuel):
     return None, float('inf')
 
 def A_star_search(board, goal, initial_fuel, gas_stations):
+    print("================================")
+    print('board in find path:', board.matrix)
+    print('ok')
     start = board.start_pos
     if not start or not goal:
         return None
@@ -115,31 +118,34 @@ def A_star_search_lv4(boards):
             initial_fuel = board.fuel
             goal_pos = board.goal_pos
             str_vehicle_index = str(vehicle_index)
-            # print('Start pos:', board.start_pos)
-            # print ('End pos:', board.goal_pos)
+            print('Start pos:', board.start_pos)
+            print ('End pos:', board.goal_pos)
+            print(f"\tTime: {board.time}")
+            print(f"\tFuel: {initial_fuel}")
             #Find and set other vehicles' positions to -1
             find_and_set_other_vehicles(board, str_vehicle_index)
-            # print("State before restoring:")
-            # board.print_board()
+            print("State before restoring:")
+            board.print_board()
 
             # Construct the path
             path = A_star_search(board, goal_pos, initial_fuel, gas_stations)
-            if path is None:
-                # print(f"Vehicle {vehicle_index} cannot find a path to the goal.")
-                generateNewState(board, vehicle_index, None)
-
-
+            if path is None and vehicle_index == 0:
+                print(f"Main vehicle cannot find a path to the goal.")
+                return 
+            elif path is None: 
+                print(f"Vehicle {vehicle_index} cannot find a path to the goal.")
+                generateNewState(board, vehicle_index, gas_stations,  None)
             else:
                 path.pop(0)
-                # print("Path found in A*:", path)
+                print("Path found in A*:", path)
                 move_to = path.pop(0)
 
                 # Generate a new state
-                # print(f"Move To: {move_to}")
-                generateNewState(board, vehicle_index, move_to)
+                print(f"Move To: {move_to}")
+                generateNewState(board, vehicle_index, gas_stations, move_to)
 
             # # Restore vehicle positions and print status
-            restore_vehicle_positions(boards)
+            restore_vehicle_positions(boards, board)
             print_vehicle_status(board)
 
             # Restore goal positions for all vehicles

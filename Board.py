@@ -132,31 +132,6 @@ class Board:
         self.matrix[move_to[0]][move_to[1]] = 'S' + vehicle
         self.recorded_move.append(move_to)
 
-    def get_cost_lv4(self, x, y, prev_x=None, prev_y=None):
-        """
-        Calculates the cost of moving to a specific cell.
-
-        Args:
-            x: x-coordinate of the cell.
-            y: y-coordinate of the cell.
-            prev_x: x-coordinate of the previous cell 
-            prev_y: y-coordinate of the previous cell 
-
-        Returns:
-            The cost associated with moving to the cell.
-        """
-      
-
-        cell_value = self.matrix[x][y][0]
-        if x == prev_x and y == prev_y:
-            return 1 
-        if cell_value in ['G', 'S', '0', '-1']:
-            return 1
-        elif cell_value.startswith('F') and len(self.matrix[x][y]) > 1:
-            self.fuel = self.inital_fuel
-            return int(self.matrix[x][y][1:]) + 1  # parse the number following 'f'
-        else:
-            return int(cell_value) + 1  # assuming other cells contain string representation of an integer
         
     def copy(self):
         """Creates a deep copy of the Board object.

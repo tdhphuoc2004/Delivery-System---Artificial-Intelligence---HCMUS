@@ -13,23 +13,18 @@ if __name__ == "__main__":
     Visuallize.menu()
 
 
-
-
-
-
-    # matrix,time,fuel = Visuallize.read_file("input_level4_3.txt")
+    # matrix,time,fuel = Visuallize.read_file("input_1_level_4_3.txt")
     # board = Board(matrix, time, fuel)
     # initialize_board = board.copy() # Pass to visualize to draw 
     # #Call search function here
-
+    # # path = A_star_search(board)
+    # # Visuallize.start(board, path)
     # #Visualize map 
     # #print(limit)
     # vehicles = 4
     # Boards = createState(board, vehicles) 
-    # # coordinate = (1,3)
-    # # new_board = generateNewState(Boards[1], 1,  coordinate)
-    # # new_board.print_board()
-    # # print_boards(Boards)
+    # print_boards(Boards)
     # A_star_search_lv4(Boards)
     # Visuallize.start_lv4_clone(Boards, initialize_board)
+
 
