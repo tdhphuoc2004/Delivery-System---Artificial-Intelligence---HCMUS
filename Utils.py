@@ -27,7 +27,6 @@ def restore_goal_positions(boards, board, numbervehicles):
     # Restore goal positions
     for vehicle_id in range(numbervehicles):
         goal_pos = boards[vehicle_id].goal_pos
-        #print ("End pos:", goal_pos)
         if goal_pos and board.matrix[goal_pos[0]][goal_pos[1]] == '0':
             board.matrix[goal_pos[0]][goal_pos[1]] = 'G' + str(vehicle_id)
 
@@ -79,7 +78,6 @@ def restore_vehicle_positions(boards, current_board):
                 current_board.matrix[x][y] = 'S'  # Main vehicle is represented as 'S'
             else:
                 current_board.matrix[x][y] = f'S{board.ID}'  # Other vehicles are represented as 'S{ID}'
-                print(f'S{board.ID}', board.matrix[x][y])
             # # Update the current position of the vehicle
             # board.current_pos = recorded_pos
 
@@ -90,6 +88,7 @@ def restore_vehicle_positions(boards, current_board):
     
 
 def generateNewState(board, vehicle_id, gas_stations, moveto):
+    print('gas stations:', gas_stations)
     if board.ID != vehicle_id:
         return None  # Return None if IDs don't match
 
@@ -110,6 +109,7 @@ def generateNewState(board, vehicle_id, gas_stations, moveto):
         # Convert the position the vehicle is staying to -1
         board.matrix[x_coord][y_coord] = '-1'
         board.time -= 1 
+        board.recorded_move.append(None)
         return 
     else:
         new_x, new_y = moveto
@@ -138,8 +138,9 @@ def generateNewState(board, vehicle_id, gas_stations, moveto):
                 board.spawn_new_goal(str(vehicle_id))
                 return 
         # Check if the vehicle moved to a gas station
-        if (new_x, new_y) in gas_stations: 
-            board.fuel = board.inital_fuel  # Refill the fuel
+        if (gas_stations):
+            if (new_x, new_y) in gas_stations: 
+                board.fuel = board.inital_fuel  # Refill the fuel
         board.start_pos = moveto
     return board
 

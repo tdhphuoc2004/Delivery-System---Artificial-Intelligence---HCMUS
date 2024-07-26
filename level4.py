@@ -20,11 +20,11 @@ def heuristic(pos, goal):
   return abs(x1 - x2) + abs(y1 - y2)
 
 
-def a_star_search(board, start, goal, initial_fuel):
-    frontier = [(0, start, initial_fuel)]
+def a_star_search(board, start, goal, initial_fuel, current_fuel):
+    frontier = [(0, start, current_fuel)]
     came_from = {start: None}
     cost_so_far = {start: 0}
-    fuel_at_node = {start: initial_fuel}
+    fuel_at_node = {start: current_fuel}
 
     while frontier:
         current_cost, current, fuel = heapq.heappop(frontier)
@@ -39,7 +39,7 @@ def a_star_search(board, start, goal, initial_fuel):
             if board.matrix[neighbor[0]][neighbor[1]][0] == 'F':
                 new_fuel = initial_fuel
 
-            if new_fuel <= 0:
+            if new_fuel < 0:
                 continue
 
             if (neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]) and new_fuel >= 0:
@@ -51,31 +51,31 @@ def a_star_search(board, start, goal, initial_fuel):
 
     return None, float('inf')
 
-def A_star_search(board, goal, initial_fuel, gas_stations):
-    print("================================")
-    print('board in find path:', board.matrix)
-    print('ok')
+def A_star_search(board, goal, initial_fuel, current_fuel, gas_stations):
     start = board.start_pos
     if not start or not goal:
         return None
 
     # First, try to find a path directly from start to goal with the initial fuel
-    path, total_cost = a_star_search(board, start, goal, initial_fuel)
+    path, total_cost = a_star_search(board, start, goal, initial_fuel, current_fuel)
     if path:
         return path
 
-    # If not enough fuel, try to find the shortest path via gas stations
+    # If not enough fuel, try to find the shortest path via gas stations, but if not have gas stations on map then return None 
+    if not gas_stations:
+        return None
+
     shortest_path = None
     shortest_cost = float('inf')
 
     for gas_station in gas_stations:
         # Path from start to gas station
-        path_to_gas, cost_to_gas = a_star_search(board, start, gas_station, initial_fuel)
+        path_to_gas, cost_to_gas = a_star_search(board, start, gas_station, initial_fuel, current_fuel)
         if not path_to_gas:
             continue
 
         # Path from gas station to goal after refueling
-        path_from_gas, cost_from_gas = a_star_search(board, gas_station, goal, initial_fuel)
+        path_from_gas, cost_from_gas = a_star_search(board, gas_station, goal, initial_fuel, initial_fuel)
         if not path_from_gas:
             continue
 
@@ -88,6 +88,7 @@ def A_star_search(board, goal, initial_fuel, gas_stations):
             shortest_cost = total_cost
 
     return shortest_path if shortest_path else None
+
 
 def A_star_search_lv4(boards):
     """
@@ -105,7 +106,7 @@ def A_star_search_lv4(boards):
     # Initialize paths storage
     vehicle_paths = [[] for _ in boards]
     gas_stations = boards[0].find_gas_locations()
-
+    initial_fuel = boards[0].inital_fuel 
     while True:
         main_vehicle_location = boards[0].find_vehicle()
         x_coord, y_coord = main_vehicle_location
@@ -115,21 +116,21 @@ def A_star_search_lv4(boards):
         # Update and pass board state between vehicles
         for vehicle_index in range(len(boards)):
             board = boards[vehicle_index]
-            initial_fuel = board.fuel
+            fuel = board.fuel
             goal_pos = board.goal_pos
             str_vehicle_index = str(vehicle_index)
             print('Start pos:', board.start_pos)
             print ('End pos:', board.goal_pos)
             print(f"\tTime: {board.time}")
-            print(f"\tFuel: {initial_fuel}")
+            print(f"\tFuel: {fuel}")
             #Find and set other vehicles' positions to -1
             find_and_set_other_vehicles(board, str_vehicle_index)
             print("State before restoring:")
             board.print_board()
 
             # Construct the path
-            path = A_star_search(board, goal_pos, initial_fuel, gas_stations)
-            if path is None and vehicle_index == 0:
+            path = A_star_search(board, goal_pos, initial_fuel, fuel, gas_stations)
+            if path is None and vehicle_index == 0 and board.fuel == 0:
                 print(f"Main vehicle cannot find a path to the goal.")
                 return 
             elif path is None: 
