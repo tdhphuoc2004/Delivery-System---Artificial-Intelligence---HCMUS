@@ -2,6 +2,7 @@ import Board
 def createState(board, vehicleNums):
     boards = []
     boards.append(board) #First element is the main vehicle 
+    boards[0].current_pos = boards[0].start_pos
     for i in range(1, vehicleNums): 
         board_element = boards[i-1].copy()
         board_element.start_pos = board.find_start_pos(str(i))
@@ -56,7 +57,7 @@ def find_and_set_other_vehicles(board, current_vehicle_id):
             if vehicle_id != current_vehicle_id:
                 board.matrix[i][j] = '-1'
 
-def restore_vehicle_positions(boards):
+def restore_vehicle_positions(boards, current_board):
     """
     Restores the positions of all vehicles to their original locations
     based on the recorded_start_goal.
@@ -75,10 +76,10 @@ def restore_vehicle_positions(boards):
             # Restore the position in the matrix
             x, y = recorded_pos
             if board.ID == 0:
-                board.matrix[x][y] = 'S'  # Main vehicle is represented as 'S'
+                current_board.matrix[x][y] = 'S'  # Main vehicle is represented as 'S'
             else:
-                board.matrix[x][y] = f'S{board.ID}'  # Other vehicles are represented as 'S{ID}'
-
+                current_board.matrix[x][y] = f'S{board.ID}'  # Other vehicles are represented as 'S{ID}'
+                print(f'S{board.ID}', board.matrix[x][y])
             # # Update the current position of the vehicle
             # board.current_pos = recorded_pos
 
@@ -88,7 +89,7 @@ def restore_vehicle_positions(boards):
 
     
 
-def generateNewState(board, vehicle_id, moveto):
+def generateNewState(board, vehicle_id, gas_stations, moveto):
     if board.ID != vehicle_id:
         return None  # Return None if IDs don't match
 
@@ -108,11 +109,13 @@ def generateNewState(board, vehicle_id, moveto):
     if moveto is None:
         # Convert the position the vehicle is staying to -1
         board.matrix[x_coord][y_coord] = '-1'
+        board.time -= 1 
+        return 
     else:
         new_x, new_y = moveto
 
         # Calculate the cost of the move
-        move_cost = board.get_cost_lv4(new_x, new_y, x_coord, y_coord)
+        move_cost = board.get_cost(new_x, new_y)
 
         if board.ID == 0:
             # Move main vehicle without changing start/goal positions
@@ -134,6 +137,9 @@ def generateNewState(board, vehicle_id, moveto):
                 board.spawn_new_start(str(vehicle_id))
                 board.spawn_new_goal(str(vehicle_id))
                 return 
+        # Check if the vehicle moved to a gas station
+        if (new_x, new_y) in gas_stations: 
+            board.fuel = board.inital_fuel  # Refill the fuel
         board.start_pos = moveto
     return board
 
@@ -157,8 +163,9 @@ def print_boards(boards):
         print(f"\tCols: {board.cols}")
         print(f"\tStart Position: {board.start_pos}")
         print(f"\tGoal Position: {board.goal_pos}")
-        print(f"\tTime: {board.time}")
-        print(f"\tFuel: {board.fuel}")
+        print(f"\t Initial Position: {board.current_pos}")
+     #   print(f"\tTime: {board.time}")
+       # print(f"\tFuel: {board.fuel}")
         print()  # Print an empty line for better readability between boards
 
 def print_vehicle_status(board):
@@ -172,10 +179,8 @@ def print_vehicle_status(board):
     Returns:
         None
     """
-   
+
     print(f"Vehicle Index: {board.ID}")
-    print(f"Fuel Remaining: {board.fuel}")
-    print(f"Time: {board.time}")
     print(f"Current Position: {board.current_pos}")
     # Optionally, print the state of the board
     print("State of the board after restoring:")
