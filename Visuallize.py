@@ -39,7 +39,6 @@ def write_file(filepath, path):
     try:
         with open(filepath, 'w') as file:
             file.write(',  '.join(map(str, path)))
-        print(f"Output đã được lưu vào {filepath}")
     except IOError as e:
         print(f"Lỗi khi ghi file: {e}")
      
@@ -122,7 +121,7 @@ def draw_path(board,path):
         highlight_path(board,path[:step_index])  # Highlight visited cells up to current step
         step_index += 1  # Move to the next step in the path
     pygame.display.update()             
-    time.sleep(1)  # Adjust delay time for slower motion
+    time.sleep(0.05)  # Adjust delay time for slower motion
 
 def draw_result(board,path):
     for step in path:
@@ -272,11 +271,12 @@ def mod_lvl1(filename, output_suffix):
     matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
     path = Asearch(board)
-    start(board, path)
-
-    # Ghi kết quả vào file
+        # Ghi kết quả vào file
     output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl1.txt')
     write_file(output_file, path)
+    start(board, path)
+
+
 
 def lvl1():
     pygame.init()
@@ -483,16 +483,16 @@ def lvl2_mini(filename):
                     matrix, time, fuel = read_file(filename)
                     board = Board(matrix, time, fuel)
                     path = Asearch2(board)
-                    start(board, path)
                     output_file = os.path.join(os.path.dirname(filename), 'output_Asearch2.txt')
                     write_file(output_file, path)
+                    start(board, path)
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
                     matrix, time, fuel = read_file(filename)
                     board = Board(matrix, time, fuel)
                     path = UCS_2(board)
-                    start(board, path)
                     output_file = os.path.join(os.path.dirname(filename), 'output_UCS_2.txt')
                     write_file(output_file, path)
+                    start(board, path)
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
                     menu()  
 
@@ -502,11 +502,12 @@ def mod_lvl3(filename, output_suffix):
     matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
     path = A_star_search(board)
-    start(board, path)
-
-    # Ghi kết quả vào file
+        # Ghi kết quả vào file
     output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl3.txt')
     write_file(output_file, path)
+    start(board, path)
+
+
 
 def lvl3():
     pygame.init()
