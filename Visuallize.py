@@ -594,7 +594,7 @@ def mode_lvl4(filename, output_suffix):
      # Collect recorded data
     list_of_recorded_move = [b.recorded_move for b in boards]
     list_of_recorded_start_goal = [b.recorded_start_goal for b in boards]
-    output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl1.txt')
+    output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl4.txt')
     with open(output_file, 'w') as file:
         file.write("Recorded Paths:\n")
         for i, path in enumerate(list_of_recorded_move):
