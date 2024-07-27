@@ -123,13 +123,14 @@ def draw_path(board,path):
     time.sleep(0.05)  # Adjust delay time for slower motion
 
 def draw_result(board,path):
-    for step in path:
-        row, col = step
+    if path != None:
+        for step in path:
+            row, col = step
         
-        # Highlight cell with color
-        draw_cell(board.matrix,row,col)
+            # Highlight cell with color
+            draw_cell(board.matrix,row,col)
                
-        pygame.display.flip()  # Update the display
+            pygame.display.flip()  # Update the display
                 
 #Write String
 def write_String(Y,X,string,cell):
