@@ -1,6 +1,7 @@
 import pygame
 import pygame
 import os
+import re
 import numpy as np
 import time 
 import sys
@@ -35,15 +36,17 @@ def read_file(filepath):
     array = np.array([line.strip().split() for line in lines[1:]])
     return array, time, fuel
 
-def write_file(filepath, path):
+def write_file(filepath, path, algo):
     try:
-        with open(filepath, 'w') as file:
+        with open(filepath, 'a') as file:  
+            file.write(f'{algo}:\n')
             if path is None:
-                file.write('None')  
+                file.write('None\n')
             else:
-                file.write(',  '.join(map(str, path)))
+                file.write('S\n')
+                file.write(' '.join(map(str, path)) + '\n')
     except IOError as e:
-        print(f"Lỗi khi ghi file: {e}")
+        print(f"Error writing to file: {e}")
      
 #Intialize the pygame
 pygame.init()
@@ -280,20 +283,20 @@ SEARCH_STRATEGIES = {
     'UCS': UCS
 }
 
-def mod_lvl1(filename, output_suffix):
+def mod_lvl1(filename, output_suffix,algo):
     matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
     
-    search_strategy = SEARCH_STRATEGIES.get(output_suffix, Asearch)  
+    search_strategy = SEARCH_STRATEGIES.get(algo, Asearch)  
     path = search_strategy(board)
     
-    output_file = os.path.join(os.path.dirname(filename), f'output{output_suffix}_lvl1.txt')
-    write_file(output_file, path)
+    output_file = os.path.join(os.path.dirname(filename), f'output{output_suffix}_level1.txt')
+    write_file(output_file, path,algo)
     
 
     start(board, path)
 
-def lvl1_mini():
+def lvl1_mini(filename):
     pygame.init()
 
     # Define screen dimensions
@@ -336,7 +339,13 @@ def lvl1_mini():
         Button(None, pos=(button_x_positions[2], row2_y), 
             text_input="QUIT", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d")
     ]
-
+    match = re.search(r'input(\d+)_level1', filename)
+    if match:
+        file_number = match.group(1)
+    else:
+        print(f"Filename format incorrect or number not found: {filename}")
+        file_number = '0'  # Or handle it as needed
+    
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         window.fill(pygame.Color("White"))
@@ -352,20 +361,15 @@ def lvl1_mini():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_1.txt'
-                    lvl2_mini(filename)
+                    mod_lvl1(filename,file_number,'A* search')
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_2.txt'
-                    lvl2_mini(filename)
+                    mod_lvl1(filename,file_number,'BFS')
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_3.txt'
-                    lvl2_mini(filename)
+                   mod_lvl1(filename,file_number,'DFS')
                 if BUTTONS[3].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_4.txt'
-                    lvl2_mini(filename)
+                    mod_lvl1(filename,file_number,'GBFS')
                 if BUTTONS[4].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_5.txt'
-                    lvl2_mini(filename)
+                    mod_lvl1(filename,file_number,'IDS')
                 if BUTTONS[5].checkForInput(MENU_MOUSE_POS):
                     menu()
 
@@ -416,7 +420,7 @@ def lvl1():
         Button(None, pos=(button_x_position_row3, row3_y), 
             text_input="QUIT", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d")
     ]
-
+    
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         window.fill(pygame.Color("White"))
@@ -432,19 +436,19 @@ def lvl1():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_1/input_level1_1.txt'
+                    filename = 'lvl_1/input1_level1.txt'
                     lvl1_mini(filename)
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_1/input_level1_2.txt'
+                    filename = 'lvl_1/input2_level1.txt'
                     lvl1_mini(filename)
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_1/input_level1_3.txt'
+                    filename = 'lvl_1/input3_level1.txt'
                     lvl1_mini(filename)
                 if BUTTONS[3].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_1/input_level1_4.txt'
+                    filename = 'lvl_1/input4_level1.txt'
                     lvl1_mini(filename)
                 if BUTTONS[4].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_1/input_level1_5.txt'
+                    filename = 'lvl_1/input5_level1.txt'
                     lvl1_mini(filename)
                 if BUTTONS[5].checkForInput(MENU_MOUSE_POS):
                     menu()
@@ -512,19 +516,19 @@ def lvl2():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_1.txt'
+                    filename = 'lvl_2/input1_level2.txt'
                     lvl2_mini(filename)
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_2.txt'
+                    filename = 'lvl_2/input2_level2.txt'
                     lvl2_mini(filename)
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_3.txt'
+                    filename = 'lvl_2/input3_level2.txt'
                     lvl2_mini(filename)
                 if BUTTONS[3].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_4.txt'
+                    filename = 'lvl_2/input4_level2.txt'
                     lvl2_mini(filename)
                 if BUTTONS[4].checkForInput(MENU_MOUSE_POS):
-                    filename = 'lvl_2/input_level2_5.txt'
+                    filename = 'lvl_2/input5_level2.txt'
                     lvl2_mini(filename)
                 if BUTTONS[5].checkForInput(MENU_MOUSE_POS):
                     menu()
@@ -558,12 +562,16 @@ def lvl2_mini(filename):
     # Define buttons
     BUTTONS = [
         Button(None, pos=(center_x, button_y_positions[0]), 
-            text_input="A search", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
+            text_input="A* search", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(center_x, button_y_positions[1]), 
             text_input="UCS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(center_x, button_y_positions[2]), 
             text_input="QUIT", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d")
     ]
+
+    # Extract number from filename
+    match = re.search(r'input(\d+)_level2', filename)
+    file_number = match.group(1) if match else '0'
 
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
@@ -580,31 +588,33 @@ def lvl2_mini(filename):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
+                    algo = 'A* search'
                     matrix, time, fuel = read_file(filename)
                     board = Board(matrix, time, fuel)
                     path = Asearch2(board)
-                    output_file = os.path.join(os.path.dirname(filename), 'output_Asearch2.txt')
-                    write_file(output_file, path)
+                    output_file = os.path.join(os.path.dirname(filename), f'output{file_number}_level2.txt')
+                    write_file(output_file, path,algo)
                     start(board, path)
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
+                    algo = 'UCS'
                     matrix, time, fuel = read_file(filename)
                     board = Board(matrix, time, fuel)
                     path = UCS_2(board)
-                    output_file = os.path.join(os.path.dirname(filename), 'output_UCS2.txt')
-                    write_file(output_file, path)
+                    output_file = os.path.join(os.path.dirname(filename), f'output{file_number}_level2.txt')
+                    write_file(output_file, path,algo)
                     start(board, path)
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
                     menu()  
 
         pygame.display.update()
 
-def mod_lvl3(filename, output_suffix):
+def mod_lvl3(filename, output_suffix,algo):
     matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
     path = A_star_search(board)
         # Ghi kết quả vào file
-    output_file = os.path.join(os.path.dirname(filename), f'output{output_suffix}_lvl3.txt')
-    write_file(output_file, path)
+    output_file = os.path.join(os.path.dirname(filename), f'output{output_suffix}_level3.txt')
+    write_file(output_file, path,algo)
     start(board, path)
 
 
@@ -654,6 +664,7 @@ def lvl3():
         Button(None, pos=(button_x_position_row3, row3_y), 
             text_input="QUIT", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d")
     ]
+    
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         window.fill(pygame.Color("White"))
@@ -671,15 +682,30 @@ def lvl3():
                 for i, button in enumerate(BUTTONS):
                     if button.checkForInput(MENU_MOUSE_POS):
                         if i == 0:
-                            mod_lvl3('lvl_3/input_level3_1.txt', '1')
+                            filename = 'lvl_3/input1_level3.txt'
+                            match = re.search(r'input(\d+)_level3', filename)
+                            file_number = match.group(1) if match else '0'
+                            mod_lvl3(filename, file_number,'A* search')
                         elif i == 1:
-                            mod_lvl3('lvl_3/input_level3_2.txt', '2')
+                            filename = 'lvl_3/input2_level3.txt'
+                            match = re.search(r'input(\d+)_level3', filename)
+                            file_number = match.group(1) if match else '0'
+                            mod_lvl3(filename, file_number,'A* search')
                         elif i == 2:
-                            mod_lvl3('lvl_3/input_level3_3.txt', '3')
+                            filename = 'lvl_3/input3_level3.txt'
+                            match = re.search(r'input(\d+)_level3', filename)
+                            file_number = match.group(1) if match else '0'
+                            mod_lvl3(filename, file_number,'A* search')
                         elif i == 3:
-                            mod_lvl3('lvl_3/input_level3_4.txt', '4')
+                            filename = 'lvl_3/input4_level3.txt'
+                            match = re.search(r'input(\d+)_level3', filename)
+                            file_number = match.group(1) if match else '0'
+                            mod_lvl3(filename, file_number,'A* search')
                         elif i == 4:
-                            mod_lvl3('lvl_3/input_level3_5.txt', '5')
+                            filename = 'lvl_3/input5_level3.txt'
+                            match = re.search(r'input(\d+)_level3', filename)
+                            file_number = match.group(1) if match else '0'
+                            mod_lvl3(filename, file_number,'A* search')
                         elif i == 5:
                             menu()  
 
@@ -695,7 +721,7 @@ def mode_lvl4(filename, output_suffix):
      # Collect recorded data
     list_of_recorded_move = [b.recorded_move for b in boards]
     list_of_recorded_start_goal = [b.recorded_start_goal for b in boards]
-    output_file = os.path.join(os.path.dirname(filename), f'output{output_suffix}_lvl4.txt')
+    output_file = os.path.join(os.path.dirname(filename), f'output{output_suffix}_level4.txt')
     with open(output_file, 'w') as file:
         file.write("Recorded Paths:\n")
         for i, path in enumerate(list_of_recorded_move):
@@ -761,11 +787,11 @@ def lvl4():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if LVL1_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    mode_lvl4("lvl_4/input_level4_1.txt", "1")
+                    mode_lvl4("lvl_4/input1_level4.txt", "1")
                 elif LVL2_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    mode_lvl4("lvl_4/input_level4_2.txt", "2")
+                    mode_lvl4("lvl_4/input2_level4.txt", "2")
                 elif LVL3_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    mode_lvl4("lvl_4/input_level4_3.txt", "3")
+                    mode_lvl4("lvl_4/input3_level4.txt", "3")
                 elif LVL4_BUTTON.checkForInput(MENU_MOUSE_POS):
                     menu()
 

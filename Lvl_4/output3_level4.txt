@@ -41,10 +41,10 @@ Vehicle 1 Start-Goal:
   No start-goal recorded
 
 Vehicle 2 Start-Goal:
-  Start: (2, 0) -> Goal: (3, 1)
+  Start: (2, 2) -> Goal: (0, 3)
 
 Vehicle 3 Start-Goal:
-  Start: (3, 2) -> Goal: (0, 3)
+  Start: (0, 1) -> Goal: (3, 1)
 
 Vehicle 4 Start-Goal:
   No start-goal recorded
