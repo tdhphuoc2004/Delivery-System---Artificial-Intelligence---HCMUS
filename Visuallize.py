@@ -290,6 +290,7 @@ def mod_lvl1(filename, output_suffix):
     output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl1.txt')
     write_file(output_file, path)
     
+
     start(board, path)
 
 
@@ -326,7 +327,7 @@ def lvl1():
         Button(None, pos=(column_x_positions[0], button_y_positions[2]), 
                text_input="DFS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[0], button_y_positions[3]), 
-               text_input="DLS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="MENU", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[1], button_y_positions[0]), 
                text_input="GBFS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[1], button_y_positions[1]), 
@@ -360,7 +361,7 @@ def lvl1():
                         elif i == 2:
                             mod_lvl1('lvl_1/input_level1_DFS.txt', 'DFS')
                         elif i == 3:
-                            mod_lvl1('lvl_1/input_level1_DLS.txt', 'DLS')
+                            menu()
                         elif i == 4:
                             mod_lvl1('lvl_1/input_level1_GBFS.txt', 'GBFS')
                         elif i == 5:
@@ -368,7 +369,8 @@ def lvl1():
                         elif i == 6:
                             mod_lvl1('lvl_1/input_level1_UCS.txt', 'UCS')
                         elif i == 7:
-                            menu()
+                            pygame.quit()
+                            sys.exit()
 
         pygame.display.update()
 
