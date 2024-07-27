@@ -10,6 +10,7 @@ from level3 import A_star_search,gbfs
 from level2 import Asearch2,UCS_2
 from level4 import A_star_search_lv4
 if __name__ == "__main__":
+   
     Visuallize.menu()
 
 

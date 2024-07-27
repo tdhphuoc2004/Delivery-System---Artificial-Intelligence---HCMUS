@@ -1,0 +1,31 @@
+Recorded Paths:
+Vehicle 1 Path:
+  (1, 1)
+  (1, 2)
+  (1, 3)
+
+Vehicle 2 Path:
+  (0, 1)
+  (0, 2)
+
+Vehicle 3 Path:
+  (2, 1)
+  (2, 2)
+
+Vehicle 4 Path:
+  (3, 1)
+  (3, 2)
+
+Recorded Start-Goal:
+Vehicle 1 Start-Goal:
+  No start-goal recorded
+
+Vehicle 2 Start-Goal:
+  No start-goal recorded
+
+Vehicle 3 Start-Goal:
+  No start-goal recorded
+
+Vehicle 4 Start-Goal:
+  No start-goal recorded
+
