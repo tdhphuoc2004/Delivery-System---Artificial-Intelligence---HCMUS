@@ -585,13 +585,17 @@ def mode_lvl4(filename, output_suffix):
     board = Board(matrix, time, fuel)
     vehicles = count_vehicles(board)
     initialize_board = board.copy()
-    Boards = createState(board, vehicles)
-    A_star_search_lv4(Boards)
-    start_lv4_clone(Boards, initialize_board)
+    boards = createState(board, vehicles)
+    A_star_search_lv4(boards)
+    start_lv4_clone(boards, initialize_board)
     
     output_file = f'output_{output_suffix}_lvl4.txt'
     with open(output_file, 'w') as file:
-        file.write("Results or status for lvl4...\n")
+        file.write("Recorded Moves:\n")
+        file.write(str([b.recorded_move for b in boards]) + '\n')
+        file.write("Recorded Start-Goal:\n")
+        file.write(str([b.recorded_start_goal for b in boards]) + '\n')
+
 
     
 def lvl4():
@@ -747,37 +751,55 @@ def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goa
 def start_lv4_clone(boards, initialize_board):
     rows = initialize_board.rows
     cols = initialize_board.cols 
-    list_of_recorded_move =[]
+    list_of_recorded_move = []
     list_of_recorded_start_goal = []
 
-    numVehicles = len(boards)
-    for i in range(numVehicles):
+    num_vehicles = len(boards)
+    for i in range(num_vehicles):
         list_of_recorded_move.append(boards[i].recorded_move)
         list_of_recorded_start_goal.append(boards[i].recorded_start_goal)
-    print ("Recorded paths:", list_of_recorded_move)
-    print ("recorded start goal:", list_of_recorded_start_goal)
+    
+    print("Recorded paths:", list_of_recorded_move)
+    print("Recorded start goal:", list_of_recorded_start_goal)
 
     init_screen(rows, cols)
+    draw_map(rows, cols)
+    draw_board(initialize_board.matrix, rows, cols)
+    
+    # Call the function to draw paths
+    draw_multiple_path(initialize_board, list_of_recorded_move, list_of_recorded_start_goal)
+    
+    # Check for completion
+    def all_paths_completed():
+        # Check if all vehicles have completed their paths
+        return all(step_index >= len(path) for step_index, path in zip(step_indices, list_of_recorded_move))
+    
+    step_indices = [0] * len(list_of_recorded_move)  # Initialize step indices for each vehicle
+
     run = True
     while run:
-        for event in pygame.event.get():    
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+        
+        # Update drawing
         draw_map(rows, cols)
         draw_board(initialize_board.matrix, rows, cols)
-        if list_of_recorded_move:
-            draw_multiple_path(initialize_board,list_of_recorded_move,list_of_recorded_start_goal)
-            cell = 3
-            X_Str = (cols - 3) / 2 * cell_size
-            Y_Str = rows * cell_size 
-            write_String(Y_Str,X_Str,str(list_of_recorded_move),cell)
-            if all(step_index >= len(path) for path in list_of_recorded_move):
-                    run = False
+        draw_multiple_path(initialize_board, list_of_recorded_move, list_of_recorded_start_goal)
+
+        if all_paths_completed():
+            run = False
+        
+        pygame.display.update()
+        time.sleep(0.5)  # Adjust the delay time for desired animation speed
+    
+    # Wait for user action to exit
     wait = True
     while wait:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 wait = False
+    
     menu()
 
                     
