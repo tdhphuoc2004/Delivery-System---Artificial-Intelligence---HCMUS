@@ -54,7 +54,25 @@ def BFS(board):
                     #came_from[pos]=current
     return None
 
-def DFS(board): 
+def dfsSearch(board, node, goal, visited, path):
+    if node == goal:
+        path.append(node)
+        return True  # Found the goal
+    
+    visited.add(node)  # Mark the current node as visited
+    
+    # Get the neighbors of the current node
+    neighbors = board.get_neighbors(node)
+    
+    for neighbor in neighbors:
+        if neighbor not in visited:
+            if dfsSearch(board, neighbor, goal, visited, path):  # Recursively call DFS on the neighbor
+                path.append(node)
+                return True
+    
+    return False  # No path found from this node
+
+def DFS(board):
     start = board.start_pos
     goal = board.goal_pos
     
@@ -64,33 +82,14 @@ def DFS(board):
     visited = set()  # Set to keep track of visited nodes
     path = []  # List to store the path from start to goal
     
-    def dfs(node):
-        if node == goal:
-            path.append(node)
-            return True  # Found the goal
-        
-        visited.add(node)  # Mark the current node as visited
-        
-        # Get the neighbors of the current node
-        neighbors = board.get_neighbors(node)
-        
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                if dfs(neighbor):  # Recursively call DFS on the neighbor
-                    path.append(node)
-                    return True
-        
-        return False  # No path found from this node
-    
     # Start DFS from the starting position
-    dfs(start)
+    dfsSearch(board, start, goal, visited, path)
     
     if path:
         path.reverse()  # Reverse the path to get it from start to goal
         return path
     
     return None  # Return None if no path found
-
 
 def UCS(board):
     '''Uniform-Cost Search'''
@@ -156,10 +155,6 @@ def GBFS(board):
                     path[pos] = path[current] + [pos]
     return None
 
-            
-    
-
-
 def Asearch(board):
     '''A*search
     '''
@@ -190,34 +185,34 @@ def Asearch(board):
     return None
 
 def DLS(board, depth_limit):
-   
     start = board.start_pos
     goal = board.goal_pos
     
     if not start or not goal:
-        return None  # If start or goal positions are not set, return None
+        return None  
     
     visited = set()  # Set to keep track of visited nodes
     
-    def dls(node, depth, path):
-        if depth > depth_limit:
-            return None  # Reached depth limit without finding goal
-        
-        if node == goal:
-            return path + [node]  # Return the path to the goal
-        
-        visited.add(node)  # Mark the current node as visited
-        
-        # Get the neighbors of the current node
-        neighbors = board.get_neighbors(node)
-        
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                result = dls(neighbor, depth + 1, path + [node])
-                if result:
-                    return result
-        
-        return None  # No path found within this depth limit
-    
     # Start DLS from the starting position
-    return dls(start, 0, [])
+    return dls_search(board, start, goal, depth_limit, visited, 0, [])
+
+
+def dls_search(board, node, goal, depth_limit, visited, depth, path):
+    if depth > depth_limit:
+        return None  # Reached depth limit without finding goal
+    
+    if node == goal:
+        return path + [node]  # Return the path to the goal
+    
+    visited.add(node)  # Mark the current node as visited
+    
+    # Get the neighbors of the current node
+    neighbors = board.get_neighbors(node)
+    
+    for neighbor in neighbors:
+        if neighbor not in visited:
+            result = dls_search(board, neighbor, goal, depth_limit, visited, depth + 1, path + [node])
+            if result:
+                return result
+    
+    return None  
