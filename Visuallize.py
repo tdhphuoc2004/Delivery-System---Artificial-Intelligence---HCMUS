@@ -85,22 +85,15 @@ def draw_map(rows, cols):
     pygame.display.update()
 
 def draw_cell(matrix,row,col):
-    if matrix[row][col] != '0':  
-        value = matrix[row][col] 
-        if value == '-1':
-            highlight_BlockedCell(row,col)
-        elif value.startswith('S'):
-            hightlight_SpecialCell(row,col,value,2)
-        elif value.startswith('G'):
-            hightlight_SpecialCell(row,col,value,0)
-        elif value.startswith('F'):
-            hightlight_SpecialCell(row,col,value,1)   
-        else:
-            hightlight_SpecialCell(row,col,value,3)
-    else:
-        rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
-        pygame.draw.rect(screen, PATH, rect)
-        pygame.draw.rect(screen, BLACK, rect, 1)
+    
+    rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+    pygame.draw.rect(screen, PATH, rect)
+    pygame.draw.rect(screen, BLACK, rect, 1)
+    font = pygame.font.SysFont(None, 24)
+    if matrix[row][col] != '0':
+        text = font.render(str(matrix[row][col]), True, BLACK)
+        text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
+        screen.blit(text, text_rect)
         
     
 def draw_board(matrix,rows,cols):
