@@ -130,7 +130,7 @@ def A_star_search_lv4(boards):
 
             # Construct the path
             path = A_star_search(board, goal_pos, initial_fuel, fuel, gas_stations)
-            if path is None and vehicle_index == 0 and board.fuel == 0:
+            if path is None and vehicle_index == 0 and (board.fuel == 0 or board.time == 0):
                 print(f"Main vehicle cannot find a path to the goal.")
                 return 
             elif path is None: 

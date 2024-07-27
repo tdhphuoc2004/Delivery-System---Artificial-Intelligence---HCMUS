@@ -1,6 +1,6 @@
 import pygame
 import pygame
-import random
+import os
 import numpy as np
 import time 
 import sys
@@ -28,14 +28,20 @@ def read_file(filepath):
     with open(filepath, 'r') as file:
         lines = file.readlines()
 
-    rows, cols,time,fuel = map(int, lines[0].strip().split())
-    array = np.array([line.strip().split() for line in lines[1:]])
-    return array,time,fuel
-
-def write_file(filepath,path):
-    with open(filepath,'w') as file:
-        file.write(',  '.join(map(str, path)))
+    # Đọc các thông số từ dòng đầu tiên
+    rows, cols, time, fuel = map(int, lines[0].strip().split())
     
+    # Chuyển đổi các dòng còn lại thành mảng numpy
+    array = np.array([line.strip().split() for line in lines[1:]])
+    return array, time, fuel
+
+def write_file(filepath, path):
+    try:
+        with open(filepath, 'w') as file:
+            file.write(',  '.join(map(str, path)))
+        print(f"Output đã được lưu vào {filepath}")
+    except IOError as e:
+        print(f"Lỗi khi ghi file: {e}")
      
 #Intialize the pygame
 pygame.init()
@@ -169,6 +175,9 @@ def highlight_path(board,path):
         rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
         pygame.draw.rect(screen, PATH, rect)
         pygame.draw.rect(screen, BLACK, rect, 1)
+        if icon:
+            icon_rect = icon.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
+            screen.blit(icon, icon_rect)
         
     pygame.display.flip()
 
@@ -252,25 +261,32 @@ def menu():
                 if LVL3_BUTTON.checkForInput(MENU_MOUSE_POS):
                     lvl3()
                 if LVL4_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    print("credits")
+                    lvl4()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
 
         pygame.display.update()   
 
-def mode_lvl1(filename):
-    matrix,time,fuel = read_file(filename)
+def mod_lvl1(filename, output_suffix):
+    matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
     path = Asearch(board)
-    start(board,path)
+    start(board, path)
+
+    # Ghi kết quả vào file
+    output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl1.txt')
+    write_file(output_file, path)
 
 def lvl1():
+    pygame.init()
+
+    # Define screen dimensions
     screen_width = 1500
     screen_height = 800  # Adjusted screen height
     window = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Menu")
-    window.fill("White")
+    window.fill(pygame.Color("White"))
     
     margin_top = 100
     button_height = 75
@@ -283,31 +299,31 @@ def lvl1():
     # Row positions
     button_y_positions = [margin_top + i * (button_height + spacing_y) for i in range(4)]
 
-    MENU_TEXT = get_font(100).render("Choose the algorithm", True, "Black")
+    MENU_TEXT = pygame.font.Font(None, 100).render("Choose the algorithm", True, pygame.Color("Black"))
     MENU_RECT = MENU_TEXT.get_rect(center=(screen_width / 2, margin_top / 2))
     
     BUTTONS = [
         Button(None, pos=(column_x_positions[0], button_y_positions[0]), 
-               text_input="A* search", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="A* search", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[0], button_y_positions[1]), 
-               text_input="BFS", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="BFS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[0], button_y_positions[2]), 
-               text_input="DFS", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="DFS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[0], button_y_positions[3]), 
-               text_input="DLS", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="DLS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[1], button_y_positions[0]), 
-               text_input="GBFS", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="GBFS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[1], button_y_positions[1]), 
-               text_input="IDS", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="IDS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[1], button_y_positions[2]), 
-               text_input="UCS", font=get_font(75), base_color="Black", hovering_color="#8d8d8d"),
+               text_input="UCS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(column_x_positions[1], button_y_positions[3]), 
-               text_input="QUIT", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
+               text_input="QUIT", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d")
     ]
 
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        window.fill("White")
+        window.fill(pygame.Color("White"))
         window.blit(MENU_TEXT, MENU_RECT)
 
         for button in BUTTONS:
@@ -319,22 +335,24 @@ def lvl1():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_A.txt')
-                if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_BFS.txt')
-                if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_DFS.txt')
-                if BUTTONS[3].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_DLS.txt')
-                if BUTTONS[4].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_GBFS.txt')
-                if BUTTONS[5].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_IDS.txt')
-                if BUTTONS[6].checkForInput(MENU_MOUSE_POS):
-                    mode_lvl1('input_level1_UCS.txt')
-                if BUTTONS[7].checkForInput(MENU_MOUSE_POS):
-                    menu()
+                for i, button in enumerate(BUTTONS):
+                    if button.checkForInput(MENU_MOUSE_POS):
+                        if i == 0:
+                            mod_lvl1('lvl_1/input_level1_A.txt', 'Astar')
+                        elif i == 1:
+                            mod_lvl1('lvl_1/input_level1_BFS.txt', 'BFS')
+                        elif i == 2:
+                            mod_lvl1('lvl_1/input_level1_DFS.txt', 'DFS')
+                        elif i == 3:
+                            mod_lvl1('lvl_1/input_level1_DLS.txt', 'DLS')
+                        elif i == 4:
+                            mod_lvl1('lvl_1/input_level1_GBFS.txt', 'GBFS')
+                        elif i == 5:
+                            mod_lvl1('lvl_1/input_level1_IDS.txt', 'IDS')
+                        elif i == 6:
+                            mod_lvl1('lvl_1/input_level1_UCS.txt', 'UCS')
+                        elif i == 7:
+                            menu()
 
         pygame.display.update()
 
@@ -394,19 +412,19 @@ def lvl2():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
-                    filename = 'input_level2_1.txt'
+                    filename = 'lvl_2/input_level2_1.txt'
                     lvl2_mini(filename)
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
-                    filename = 'input_level2_2.txt'
+                    filename = 'lvl_2/input_level2_2.txt'
                     lvl2_mini(filename)
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    filename = 'input_level2_3.txt'
+                    filename = 'lvl_2/input_level2_3.txt'
                     lvl2_mini(filename)
                 if BUTTONS[3].checkForInput(MENU_MOUSE_POS):
-                    filename = 'input_level2_4.txt'
+                    filename = 'lvl_2/input_level2_4.txt'
                     lvl2_mini(filename)
                 if BUTTONS[4].checkForInput(MENU_MOUSE_POS):
-                    filename = 'input_level2_5.txt'
+                    filename = 'lvl_2/input_level2_5.txt'
                     lvl2_mini(filename)
                 if BUTTONS[5].checkForInput(MENU_MOUSE_POS):
                     menu()
@@ -445,7 +463,7 @@ def lvl2_mini(filename):
             text_input="UCS", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d"),
         Button(None, pos=(center_x, button_y_positions[2]), 
             text_input="QUIT", font=pygame.font.Font(None, 75), base_color="Black", hovering_color="#8d8d8d")
-]
+    ]
 
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
@@ -466,21 +484,29 @@ def lvl2_mini(filename):
                     board = Board(matrix, time, fuel)
                     path = Asearch2(board)
                     start(board, path)
+                    output_file = os.path.join(os.path.dirname(filename), 'output_Asearch2.txt')
+                    write_file(output_file, path)
                 if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
                     matrix, time, fuel = read_file(filename)
                     board = Board(matrix, time, fuel)
                     path = UCS_2(board)
                     start(board, path)
+                    output_file = os.path.join(os.path.dirname(filename), 'output_UCS_2.txt')
+                    write_file(output_file, path)
                 if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    menu()
+                    menu()  
 
         pygame.display.update()
 
-def mod_lvl3(filename):
-    matrix,time,fuel = read_file(filename)
+def mod_lvl3(filename, output_suffix):
+    matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
     path = A_star_search(board)
-    start(board,path)
+    start(board, path)
+
+    # Ghi kết quả vào file
+    output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl3.txt')
+    write_file(output_file, path)
 
 def lvl3():
     pygame.init()
@@ -537,74 +563,81 @@ def lvl3():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if BUTTONS[0].checkForInput(MENU_MOUSE_POS):
-                    mod_lvl3('input_level3_1.txt')               
-                if BUTTONS[1].checkForInput(MENU_MOUSE_POS):
-                    mod_lvl3('input_level3_2.txt')                   
-                if BUTTONS[2].checkForInput(MENU_MOUSE_POS):
-                    mod_lvl3('input_level3_3.txt')    
-                if BUTTONS[3].checkForInput(MENU_MOUSE_POS):
-                    mod_lvl3('input_level3_4.txt')    
-                if BUTTONS[4].checkForInput(MENU_MOUSE_POS):
-                    mod_lvl3('input_level3_5.txt')    
-                if BUTTONS[5].checkForInput(MENU_MOUSE_POS):
-                    menu()
+                for i, button in enumerate(BUTTONS):
+                    if button.checkForInput(MENU_MOUSE_POS):
+                        if i == 0:
+                            mod_lvl3('lvl_3/input_level3_1.txt', '1')
+                        elif i == 1:
+                            mod_lvl3('lvl_3/input_level3_2.txt', '2')
+                        elif i == 2:
+                            mod_lvl3('lvl_3/input_level3_3.txt', '3')
+                        elif i == 3:
+                            mod_lvl3('lvl_3/input_level3_4.txt', '4')
+                        elif i == 4:
+                            mod_lvl3('lvl_3/input_level3_5.txt', '5')
+                        elif i == 5:
+                            menu()  
 
         pygame.display.update()            
 
-def mode_lvl4(filename):
-    matrix,time,fuel = read_file(filename)
+def mode_lvl4(filename, output_suffix):
+    matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
-    vehicles =count_vehicles(board)
+    vehicles = count_vehicles(board)
     initialize_board = board.copy()
     Boards = createState(board, vehicles)
     A_star_search_lv4(Boards)
     start_lv4_clone(Boards, initialize_board)
     
+    output_file = f'output_{output_suffix}_lvl4.txt'
+    with open(output_file, 'w') as file:
+        file.write("Results or status for lvl4...\n")
+
+    
 def lvl4():
     pygame.init()
-    window = pygame.display.set_mode((1500, 700))
     screen_width = 1500
     screen_height = 700
+    window = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Menu")
     window.fill(pygame.Color("White"))
 
     while True:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-        
+
         MENU_TEXT = get_font(100).render("Choose the map", True, pygame.Color("Black"))
         MENU_RECT = MENU_TEXT.get_rect(center=(screen_width / 2, screen_height / 8))
-        
+
         button_y_positions = [
-            screen_height / 4,         # LVL1 button
-            screen_height / 4 + 100,   # LVL2 button
-            screen_height / 4 + 200    # LVL3 button
+            screen_height / 4,         # Map 1 button
+            screen_height / 4 + 100,   # Map 2 button
+            screen_height / 4 + 200    # Map 3 button
         ]
-        
+
         LVL1_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[0]), 
                              text_input="Map 1", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
         LVL2_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[1]), 
                              text_input="Map 2", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
         LVL3_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[2]), 
                              text_input="Map 3", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
-        
+
         window.blit(MENU_TEXT, MENU_RECT)
 
         for button in [LVL1_BUTTON, LVL2_BUTTON, LVL3_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(window)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if LVL1_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    mode_lvl4("input_level4_1.txt")     
-                if LVL2_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    mode_lvl4("input_level4_2.txt")
-                if LVL3_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    mode_lvl4("input_level4_3.txt")
+                    mode_lvl4("lvl_4/input_level4_1.txt", "1")
+                elif LVL2_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    mode_lvl4("lvl_4/input_level4_2.txt", "2")
+                elif LVL3_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    mode_lvl4("lvl_4/input_level4_3.txt", "3")
 
         pygame.display.update()
             
@@ -612,6 +645,8 @@ def start(board, path):
     pygame.display.set_caption("Start")
     init_screen(board.rows,board.cols)
     #Game loop
+    global step_index
+    step_index = 0
     run = True
     while run:
         for event in pygame.event.get():    
@@ -622,6 +657,7 @@ def start(board, path):
         draw_map(board.rows, board.cols)
         draw_board(board.matrix,board.rows,board.cols)
         if path != None:
+            flag = True
             cell = 3      
             draw_path(board,path)
             X_Str = (board.cols - 3) / 2 * cell_size
@@ -678,31 +714,34 @@ def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goa
                     rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
                     pygame.draw.rect(screen, color, rect)
                     pygame.draw.rect(screen, BLACK, rect, 1)
+                    font = pygame.font.SysFont(None, 24)
+                    text = font.render(f'Xe {vehicle_index}', True, BLACK)
+                    text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
+                    screen.blit(text, text_rect)
                 
                 # Move to the next step in the path
                 step_indices[vehicle_index] += 1
 
-                # Check if the vehicle reached its goal
-                if step_indices[vehicle_index] >= len(path):
-                    # Move to the next start-goal pair for the vehicle
-                    current_goal_indices[vehicle_index] = (current_goal_indices[vehicle_index] + 1) % len(goal_lists[vehicle_index])
-                    
-                    if len(goal_lists[vehicle_index]) == 0:
-                        continue  # Skip if there are no start-goal pairs
+                # # Check if the vehicle reached its goal
+                # if step_indices[vehicle_index] >= len(path):
+                #     # Move to the next start-goal pair for the vehicle
+                #     current_goal_indices[vehicle_index] = (current_goal_indices[vehicle_index] + 1) % len(goal_lists[vehicle_index])
+                #     if len(goal_lists[vehicle_index]) == 0:
+                #         continue  # Skip if there are no start-goal pairs
 
-                    # Get the new start-goal pair
-                    new_start_goal = goal_lists[vehicle_index][current_goal_indices[vehicle_index]]
+                #     # Get the new start-goal pair
+                #     new_start_goal = goal_lists[vehicle_index][current_goal_indices[vehicle_index]]
                     
-                    # Redraw the map with the new start and goal points
-                    draw_map(board.rows, board.cols)
-                    draw_board(board.matrix, board.rows, board.cols)
+                #     # Redraw the map with the new start and goal points
+                #     draw_map(board.rows, board.cols)
+                #     draw_board(board.matrix, board.rows, board.cols)
                     
-                    # Update the path (assuming there's a function to calculate a new path based on start and goal)
-                    list_of_recorded_moves[vehicle_index] = calculate_new_path(new_start_goal[0], new_start_goal[1])
-                    step_indices[vehicle_index] = 0  # Reset step index for the new path
+                #     # Update the path (assuming there's a function to calculate a new path based on start and goal)
+                #     list_of_recorded_moves[vehicle_index] = calculate_new_path(new_start_goal[0], new_start_goal[1])
+                #     step_indices[vehicle_index] = 0  # Reset step index for the new path
 
         pygame.display.update()
-        time.sleep(2)  # Adjust delay time for slower motion
+        time.sleep(5)  # Adjust delay time for slower motion
 
 
 def start_lv4_clone(boards, initialize_board):
@@ -719,22 +758,26 @@ def start_lv4_clone(boards, initialize_board):
     print ("recorded start goal:", list_of_recorded_start_goal)
 
     init_screen(rows, cols)
-    draw_map(rows, cols)
-    draw_board(initialize_board.matrix, rows, cols)
-    if list_of_recorded_move:
-        draw_multiple_path(initialize_board,list_of_recorded_move,list_of_recorded_start_goal)
-        if all(step_index >= len(path) for path in list_of_recorded_move):
+    run = True
+    while run:
+        for event in pygame.event.get():    
+            if event.type == pygame.QUIT:
                 run = False
+        draw_map(rows, cols)
+        draw_board(initialize_board.matrix, rows, cols)
+        if list_of_recorded_move:
+            draw_multiple_path(initialize_board,list_of_recorded_move,list_of_recorded_start_goal)
+            cell = 3
+            X_Str = (cols - 3) / 2 * cell_size
+            Y_Str = rows * cell_size 
+            write_String(Y_Str,X_Str,str(list_of_recorded_move),cell)
+            if all(step_index >= len(path) for path in list_of_recorded_move):
+                    run = False
     wait = True
     while wait:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 wait = False
-    pygame.quit()
-    sys.exit()
+    menu()
 
-# font = pygame.font.SysFont(None, 24)
-#                     text = font.render(f'Xe {vehicle_index}', True, BLACK)
-#                     text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
-#                     screen.blit(text, text_rect)
                     
