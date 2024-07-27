@@ -270,13 +270,26 @@ def menu():
 
         pygame.display.update()   
 
+SEARCH_STRATEGIES = {
+    'Astar': Asearch,
+    'BFS': BFS,
+    'DFS': DFS,
+    'DLS': DLS,
+    'GBFS': GBFS,
+    'IDS': IDS,
+    'UCS': UCS
+}
+
 def mod_lvl1(filename, output_suffix):
     matrix, time, fuel = read_file(filename)
     board = Board(matrix, time, fuel)
-    path = Asearch(board)
-        # Ghi kết quả vào file
+    
+    search_strategy = SEARCH_STRATEGIES.get(output_suffix, Asearch)  
+    path = search_strategy(board)
+    
     output_file = os.path.join(os.path.dirname(filename), f'output_{output_suffix}_lvl1.txt')
     write_file(output_file, path)
+    
     start(board, path)
 
 
@@ -709,16 +722,24 @@ def start(board, path):
     menu()
 
 def all_paths_completed(step_indices, list_of_recorded_moves):
-    return all(step_index >= len(path) for step_index, path in zip(step_indices, list_of_recorded_moves))
+    for vehicle_index, path in enumerate(list_of_recorded_moves):
+        if step_indices[vehicle_index] < len(path):
+            if path[step_indices[vehicle_index]] is not None:
+                return False
+    return True
    
-def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goal):
+def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goal, goal_lists, current_goal_indices):
     step_indices = [0] * len(list_of_recorded_moves)  # Initialize step index for each vehicle
     previous_steps = [None] * len(list_of_recorded_moves)  # Store the previous steps
 
-    while not all_paths_completed(step_indices,list_of_recorded_moves):
+    clock = pygame.time.Clock()  # Initialize clock for controlling frame rate
+
+    while all_paths_completed(step_indices, list_of_recorded_moves):
         draw_map(board.rows, board.cols)
         draw_board(board.matrix, board.rows, board.cols)
-        
+
+        all_vehicles_completed = True
+
         for vehicle_index, path in enumerate(list_of_recorded_moves):
             if step_indices[vehicle_index] < len(path):
                 current_step = path[step_indices[vehicle_index]]
@@ -729,9 +750,9 @@ def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goa
                 else:
                     final_step = previous_steps[vehicle_index]
 
-                if final_step is not None:
+                if final_step and isinstance(final_step, tuple):
                     row, col = final_step
-                    color = cars_color[vehicle_index] if vehicle_index < len(cars_color) else None
+                    color = cars_color[vehicle_index % len(cars_color)]  # Ensure color index is within bounds
                     rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
                     pygame.draw.rect(screen, color, rect)
                     pygame.draw.rect(screen, BLACK, rect, 1)
@@ -741,27 +762,33 @@ def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goa
                     screen.blit(text, text_rect)
                 
                 step_indices[vehicle_index] += 1
-                # # Check if the vehicle reached its goal
-                # if step_indices[vehicle_index] >= len(path):
-                #     # Move to the next start-goal pair for the vehicle
-                #     current_goal_indices[vehicle_index] = (current_goal_indices[vehicle_index] + 1) % len(goal_lists[vehicle_index])
-                #     if len(goal_lists[vehicle_index]) == 0:
-                #         continue  # Skip if there are no start-goal pairs
+                
+                if step_indices[vehicle_index] >= len(path):
+                    if not goal_lists[vehicle_index]:  # Check if goal list is empty
+                        continue
 
-                #     # Get the new start-goal pair
-                #     new_start_goal = goal_lists[vehicle_index][current_goal_indices[vehicle_index]]
-                    
-                #     # Redraw the map with the new start and goal points
-                #     draw_map(board.rows, board.cols)
-                #     draw_board(board.matrix, board.rows, board.cols)
-                    
-                #     # Update the path (assuming there's a function to calculate a new path based on start and goal)
-                #     list_of_recorded_moves[vehicle_index] = calculate_new_path(new_start_goal[0], new_start_goal[1])
-                #     step_indices[vehicle_index] = 0  # Reset step index for the new path       
+                    # Move to the next start-goal pair for the vehicle
+                    current_goal_indices[vehicle_index] = (current_goal_indices[vehicle_index] + 1) % len(goal_lists[vehicle_index])
+                    new_start_goal = goal_lists[vehicle_index][current_goal_indices[vehicle_index]]
+
+                    if new_start_goal:
+                        # Redraw the map with the new start and goal points
+                        draw_map(board.rows, board.cols)
+                        draw_board(board.matrix, board.rows, board.cols)
+                        
+                        # Update the path
+                        list_of_recorded_moves[vehicle_index] = calculate_new_path(new_start_goal[0], new_start_goal[1])
+                        step_indices[vehicle_index] = 0
+            else:
+                # Check if a vehicle is not completing its path
+                all_vehicles_completed = False
+
+        if all_vehicles_completed:
+            break  # Exit the loop if all vehicles have completed their paths
 
         pygame.display.update()
-        time.sleep(0.5)  # Adjust delay time for slower motion
-
+        clock.tick(10)  # Control the frame rate (adjust as needed)
+        
 def start_lv4_clone(boards, initialize_board):
     rows = initialize_board.rows
     cols = initialize_board.cols 
@@ -773,6 +800,9 @@ def start_lv4_clone(boards, initialize_board):
         list_of_recorded_move.append(boards[i].recorded_move)
         list_of_recorded_start_goal.append(boards[i].recorded_start_goal)
     
+    goal_lists = [list(boards[i].recorded_start_goal.values()) for i in range(num_vehicles)]
+    current_goal_indices = [0] * num_vehicles
+
     print("Recorded paths:", list_of_recorded_move)
     print("Recorded start goal:", list_of_recorded_start_goal)
 
@@ -780,7 +810,7 @@ def start_lv4_clone(boards, initialize_board):
     draw_map(rows, cols)
     draw_board(initialize_board.matrix, rows, cols)
     
-    draw_multiple_path(initialize_board, list_of_recorded_move, list_of_recorded_start_goal)
+    draw_multiple_path(initialize_board, list_of_recorded_move, list_of_recorded_start_goal, goal_lists, current_goal_indices)
     
     wait = True
     while wait:
