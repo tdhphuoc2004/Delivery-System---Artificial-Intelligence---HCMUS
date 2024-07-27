@@ -44,7 +44,7 @@ def A_star_search(board):
 
     # First, try to find a path directly from start to goal with the initial fuel
     path, total_cost = a_star_search(board, start, goal, initial_fuel)
-    if path:
+    if path and total_cost <= board.time:
         return path
 
     # If not enough fuel, try to find the shortest path via gas stations
@@ -70,7 +70,7 @@ def A_star_search(board):
             shortest_path = total_path
             shortest_cost = total_cost
 
-    return shortest_path if shortest_path else None
+    return shortest_path if shortest_cost <= board.time else None
 
 
 
