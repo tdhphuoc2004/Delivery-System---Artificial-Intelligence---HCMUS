@@ -8,13 +8,13 @@ Vehicle 1 Path:
   (0, 6)
   (1, 6)
   (2, 6)
-  (2, 5)
-  (3, 5)
-  (4, 5)
-  (5, 5)
-  (6, 5)
-  (7, 5)
-  (7, 6)
+  (3, 6)
+  (4, 6)
+  (5, 6)
+  (5, 7)
+  (5, 6)
+  (5, 7)
+  (6, 7)
   (7, 7)
   (7, 8)
 
@@ -32,7 +32,8 @@ Vehicle 2 Path:
   (8, 0)
   (9, 0)
   (9, 0)
-  None
+  (9, 1)
+  (9, 1)
   None
   None
   None
@@ -46,25 +47,26 @@ Vehicle 3 Path:
   (4, 5)
   (4, 6)
   (4, 6)
-  (3, 6)
-  (2, 6)
-  (1, 6)
-  (0, 6)
-  (0, 7)
-  (0, 8)
-  (1, 8)
-  (2, 8)
-  (2, 8)
-  (1, 8)
+  (4, 5)
+  (5, 5)
+  (6, 5)
+  (7, 5)
+  (8, 5)
+  (8, 5)
+  (7, 5)
+  (6, 5)
+  (5, 5)
+  (5, 4)
 
 Recorded Start-Goal:
 Vehicle 1 Start-Goal:
   No start-goal recorded
 
 Vehicle 2 Start-Goal:
-  Start: (9, 0) -> Goal: (5, 9)
+  Start: (9, 0) -> Goal: (9, 1)
+  Start: (9, 1) -> Goal: (3, 6)
 
 Vehicle 3 Start-Goal:
-  Start: (4, 6) -> Goal: (2, 8)
-  Start: (2, 8) -> Goal: (0, 7)
+  Start: (4, 6) -> Goal: (8, 5)
+  Start: (8, 5) -> Goal: (1, 1)
 
