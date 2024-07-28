@@ -87,7 +87,7 @@ def A_star_search(board, goal, initial_fuel, current_fuel, gas_stations):
             shortest_path = total_path
             shortest_cost = total_cost
 
-    return shortest_path if shortest_path else None
+    return shortest_path if shortest_cost <= board.time else None
 
 
 def A_star_search_lv4(boards):
@@ -104,7 +104,6 @@ def A_star_search_lv4(boards):
     """
     
     # Initialize paths storage
-    vehicle_paths = [[] for _ in boards]
     gas_stations = boards[0].find_gas_locations()
     initial_fuel = boards[0].inital_fuel 
     while True:
@@ -125,9 +124,6 @@ def A_star_search_lv4(boards):
             print(f"\tFuel: {fuel}")
             #Find and set other vehicles' positions to -1
             find_and_set_other_vehicles(board, str_vehicle_index)
-            print("State before restoring:")
-            board.print_board()
-
             # Construct the path
             path = A_star_search(board, goal_pos, initial_fuel, fuel, gas_stations)
             if path is None and vehicle_index == 0 and (board.fuel == 0 or board.time == 0):
