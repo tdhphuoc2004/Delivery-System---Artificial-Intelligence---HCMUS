@@ -78,21 +78,13 @@ class Board:
          #spawn new goal for other vehicles
         #vehicle: string from "1" to "9"
         available_positions = []
-        
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if self.matrix[i][j] == '0':  # Check if the cell is empty
-                    available_positions.append((i, j))
-        
-        if available_positions:
-            new_start_pos = random.choice(available_positions)
-            self.matrix[new_start_pos[0]][new_start_pos[1]] = 'S' + vehicle
-            self.record_start_and_goal(new_start_pos, None)
-            self.start_pos = new_start_pos
-            self.current_pos = new_start_pos
-            self.recorded_move.append(new_start_pos)
-            return new_start_pos
-        return None
+        new_start_pos = self.current_pos
+        self.record_start_and_goal(new_start_pos, None)
+        self.start_pos = new_start_pos
+        self.current_pos = new_start_pos
+        self.recorded_move.append(new_start_pos)
+        return new_start_pos
+
     
     def spawn_new_goal(self, vehicle):
         #spawn new goal for other vehicles

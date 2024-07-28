@@ -17,12 +17,14 @@ Vehicle 2 Path:
   (0, 2)
   (0, 3)
   (0, 4)
+  (0, 4)
 
 Vehicle 3 Path:
   (1, 1)
   (1, 2)
   (1, 3)
   (1, 4)
+  (2, 4)
   (2, 4)
   None
   None
@@ -41,10 +43,10 @@ Vehicle 1 Start-Goal:
   No start-goal recorded
 
 Vehicle 2 Start-Goal:
-  Start: (3, 2) -> Goal: (0, 2)
+  Start: (0, 4) -> Goal: (0, 1)
 
 Vehicle 3 Start-Goal:
-  Start: (3, 1) -> Goal: (0, 1)
+  Start: (2, 4) -> Goal: (1, 2)
 
 Vehicle 4 Start-Goal:
   No start-goal recorded
