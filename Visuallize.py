@@ -180,7 +180,7 @@ def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goa
                 #     step_indices[vehicle_index] = 0  # Reset step index for the new path       
 
         pygame.display.update()
-        time.sleep(0.5)  # Adjust delay time for slower motion
+        time.sleep(2)  # Adjust delay time for slower motion
                                  
 #Highlight    
 def highlight_BlockedCell(row,col):
@@ -252,7 +252,6 @@ def count_vehicles(board):
         for item in row:
             if isinstance(item, str) and item.startswith('S'):
                 count += 1
-    
     return count            
 def all_paths_completed(step_indices, list_of_recorded_moves):
     return all(step_index >= len(path) for step_index, path in zip(step_indices, list_of_recorded_moves))
