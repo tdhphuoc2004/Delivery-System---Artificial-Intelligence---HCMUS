@@ -14,12 +14,17 @@ Vehicle 1 Path:
   None
   None
   None
-  (4, 8)
-  (3, 8)
   (3, 7)
+  (3, 6)
+  (3, 5)
   None
   None
   None
+  (4, 5)
+  (4, 4)
+  (4, 3)
+  (4, 2)
+  (4, 1)
 
 Vehicle 2 Path:
   (2, 5)
@@ -30,17 +35,20 @@ Vehicle 2 Path:
   (0, 8)
   (0, 9)
   (0, 9)
-  (1, 9)
-  (2, 9)
-  (2, 9)
-  (2, 8)
-  (2, 7)
-  (3, 7)
-  (4, 7)
-  (5, 7)
+  (0, 8)
+  (0, 7)
+  (0, 6)
+  (1, 6)
+  (2, 6)
+  (2, 6)
   None
-  (6, 7)
-  (6, 7)
+  None
+  None
+  None
+  None
+  None
+  None
+  None
   None
   None
   None
@@ -53,49 +61,52 @@ Vehicle 3 Path:
   (1, 8)
   (1, 9)
   (1, 9)
+  None
+  (1, 8)
+  None
+  None
+  None
+  (1, 7)
+  None
+  None
+  None
+  (1, 8)
+  (1, 7)
   (1, 8)
   None
   None
   None
   None
-  (1, 7)
-  (2, 7)
   None
-  (3, 7)
-  (4, 7)
-  (4, 7)
-  (4, 6)
-  (4, 5)
-  (5, 5)
-  (6, 5)
-  (7, 5)
+  None
+  (1, 7)
 
 Vehicle 4 Path:
   (2, 7)
   (2, 8)
   (2, 9)
   (2, 9)
-  (2, 8)
-  (2, 8)
-  (3, 8)
-  (4, 8)
-  (4, 9)
-  (5, 9)
-  (5, 9)
-  (6, 9)
-  (7, 9)
-  (7, 9)
-  (6, 9)
-  (5, 9)
-  (4, 9)
-  (3, 9)
-  (2, 9)
-  (1, 9)
-  (0, 9)
-  (0, 8)
-  (0, 7)
-  (0, 7)
   None
+  None
+  None
+  (2, 8)
+  None
+  None
+  None
+  (2, 7)
+  None
+  None
+  None
+  (2, 8)
+  (2, 7)
+  (3, 7)
+  None
+  None
+  None
+  None
+  None
+  None
+  (3, 6)
 
 Vehicle 5 Path:
   (4, 4)
@@ -115,10 +126,15 @@ Vehicle 5 Path:
   None
   (3, 2)
   (4, 2)
-  None
   (4, 3)
   (4, 4)
   (4, 5)
+  (5, 5)
+  (5, 5)
+  None
+  None
+  None
+  None
 
 Vehicle 6 Path:
   None
@@ -129,18 +145,22 @@ Vehicle 6 Path:
   (4, 6)
   (4, 6)
   (5, 6)
-  (6, 6)
-  (7, 6)
-  (8, 6)
-  (8, 6)
-  (7, 6)
-  None
-  (6, 6)
-  (6, 7)
-  (6, 8)
+  (5, 7)
   (5, 8)
   (5, 9)
-  (5, 9)
+  (6, 9)
+  (7, 9)
+  (8, 9)
+  (8, 9)
+  (7, 9)
+  (6, 9)
+  (6, 8)
+  (6, 7)
+  (6, 7)
+  None
+  None
+  None
+  None
   None
   None
   None
@@ -159,10 +179,15 @@ Vehicle 7 Path:
   (5, 2)
   (6, 2)
   (6, 2)
+  (5, 2)
+  (5, 1)
+  (5, 0)
+  (5, 0)
   None
   None
-  (6, 3)
-  (5, 3)
+  None
+  None
+  None
   None
   None
   None
@@ -189,6 +214,37 @@ Vehicle 8 Path:
   None
   None
   None
+  (3, 3)
+  None
+  None
+  None
+  (4, 3)
+
+Vehicle 9 Path:
+  (7, 7)
+  (6, 7)
+  (6, 8)
+  (5, 8)
+  (4, 8)
+  None
+  (3, 8)
+  None
+  None
+  (3, 7)
+  (3, 6)
+  (3, 5)
+  (2, 5)
+  (1, 5)
+  (0, 5)
+  (0, 6)
+  (0, 7)
+  (0, 8)
+  (0, 8)
+  None
+  None
+  None
+  None
+  None
   None
 
 Recorded Start-Goal:
@@ -196,32 +252,31 @@ Vehicle 1 Start-Goal:
   No start-goal recorded
 
 Vehicle 2 Start-Goal:
-  Start: (0, 9) -> Goal: (2, 9)
-  Start: (2, 9) -> Goal: (6, 7)
-  Start: (6, 7) -> Goal: (0, 0)
+  Start: (0, 9) -> Goal: (2, 6)
+  Start: (2, 6) -> Goal: (2, 2)
 
 Vehicle 3 Start-Goal:
-  Start: (1, 9) -> Goal: (4, 7)
-  Start: (4, 7) -> Goal: (8, 5)
+  Start: (1, 9) -> Goal: (5, 3)
 
 Vehicle 4 Start-Goal:
-  Start: (2, 9) -> Goal: (2, 8)
-  Start: (2, 8) -> Goal: (5, 9)
-  Start: (5, 9) -> Goal: (7, 9)
-  Start: (7, 9) -> Goal: (0, 7)
-  Start: (0, 7) -> Goal: (3, 5)
+  Start: (2, 9) -> Goal: (9, 2)
 
 Vehicle 5 Start-Goal:
-  Start: (3, 0) -> Goal: (9, 5)
+  Start: (3, 0) -> Goal: (5, 5)
+  Start: (5, 5) -> Goal: (4, 0)
 
 Vehicle 6 Start-Goal:
-  Start: (4, 6) -> Goal: (8, 6)
-  Start: (8, 6) -> Goal: (5, 9)
-  Start: (5, 9) -> Goal: (1, 6)
+  Start: (4, 6) -> Goal: (8, 9)
+  Start: (8, 9) -> Goal: (6, 7)
+  Start: (6, 7) -> Goal: (2, 0)
 
 Vehicle 7 Start-Goal:
-  Start: (6, 2) -> Goal: (7, 7)
+  Start: (6, 2) -> Goal: (5, 0)
+  Start: (5, 0) -> Goal: (5, 9)
 
 Vehicle 8 Start-Goal:
-  Start: (3, 2) -> Goal: (2, 9)
+  Start: (3, 2) -> Goal: (4, 5)
+
+Vehicle 9 Start-Goal:
+  Start: (0, 8) -> Goal: (7, 2)
 
