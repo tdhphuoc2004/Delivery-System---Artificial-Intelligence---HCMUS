@@ -11,3 +11,5 @@ BFS:
 None
 A* search:
 None
+A* search:
+None

@@ -63,7 +63,7 @@ def init_screen(rows, cols):
 pygame.display.set_caption('Demo')
 icon = pygame.image.load('car.png')
 pygame.display.set_icon(icon)
-cars_color = [
+cars_color = [  
     (0, 148, 82),
     (0, 128, 128),
     (205, 38, 38),
@@ -94,8 +94,7 @@ def draw_cell(matrix,row,col):
         text = font.render(str(matrix[row][col]), True, BLACK)
         text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
         screen.blit(text, text_rect)
-        
-    
+         
 def draw_board(matrix,rows,cols):
     for i in range(rows):
             for j in range(cols):
@@ -131,14 +130,58 @@ def draw_result(board,path):
             draw_cell(board.matrix,row,col)
                
             pygame.display.flip()  # Update the display
+
+def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goal):
+    step_indices = [0] * len(list_of_recorded_moves)  # Initialize step index for each vehicle
+    previous_steps = [None] * len(list_of_recorded_moves)  # Store the previous steps
+
+    while not all_paths_completed(step_indices,list_of_recorded_moves):
+        draw_map(board.rows, board.cols)
+        draw_board(board.matrix, board.rows, board.cols)
+        
+        for vehicle_index, path in enumerate(list_of_recorded_moves):
+            if step_indices[vehicle_index] < len(path):
+                current_step = path[step_indices[vehicle_index]]
                 
-#Write String
-def write_String(Y,X,string,cell):
-    font = pygame.font.SysFont(None, 26)
-    text = font.render(str(string), True, BLACK)
-    text_rect = text.get_rect(center=(X + cell_size * cell // 2, Y + cell_size * cell // 2))
-    screen.blit(text, text_rect) 
-                                
+                if current_step is not None:
+                    final_step = current_step
+                    previous_steps[vehicle_index] = current_step
+                else:
+                    final_step = previous_steps[vehicle_index]
+
+                if final_step is not None:
+                    row, col = final_step
+                    color = cars_color[vehicle_index] if vehicle_index < len(cars_color) else None
+                    rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+                    pygame.draw.rect(screen, color, rect)
+                    pygame.draw.rect(screen, BLACK, rect, 1)
+                    font = pygame.font.SysFont(None, 24)
+                    text = font.render(f'Xe {vehicle_index}', True, BLACK)
+                    text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
+                    screen.blit(text, text_rect)
+                
+                step_indices[vehicle_index] += 1
+                # # Check if the vehicle reached its goal
+                # if step_indices[vehicle_index] >= len(path):
+                #     # Move to the next start-goal pair for the vehicle
+                #     current_goal_indices[vehicle_index] = (current_goal_indices[vehicle_index] + 1) % len(goal_lists[vehicle_index])
+                #     if len(goal_lists[vehicle_index]) == 0:
+                #         continue  # Skip if there are no start-goal pairs
+
+                #     # Get the new start-goal pair
+                #     new_start_goal = goal_lists[vehicle_index][current_goal_indices[vehicle_index]]
+                    
+                #     # Redraw the map with the new start and goal points
+                #     draw_map(board.rows, board.cols)
+                #     draw_board(board.matrix, board.rows, board.cols)
+                    
+                #     # Update the path (assuming there's a function to calculate a new path based on start and goal)
+                #     list_of_recorded_moves[vehicle_index] = calculate_new_path(new_start_goal[0], new_start_goal[1])
+                #     step_indices[vehicle_index] = 0  # Reset step index for the new path       
+
+        pygame.display.update()
+        time.sleep(0.5)  # Adjust delay time for slower motion
+                                 
 #Highlight    
 def highlight_BlockedCell(row,col):
     rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
@@ -196,7 +239,12 @@ def calculate_total_cost(board, path):
         total_cost += board.get_cost(x, y)
     total_cost = total_cost - 1 #starting positon
     return total_cost
-
+def write_String(Y,X,string,cell):
+    font = pygame.font.SysFont(None, 26)
+    text = font.render(str(string), True, BLACK)
+    text_rect = text.get_rect(center=(X + cell_size * cell // 2, Y + cell_size * cell // 2))
+    screen.blit(text, text_rect) 
+      
 def count_vehicles(board):
     count = 0
     
@@ -206,6 +254,9 @@ def count_vehicles(board):
                 count += 1
     
     return count            
+def all_paths_completed(step_indices, list_of_recorded_moves):
+    return all(step_index >= len(path) for step_index, path in zip(step_indices, list_of_recorded_moves))
+   
 
 #Menu function
 def menu():
@@ -315,7 +366,7 @@ def lvl1_mini(filename):
     # Center buttons horizontally for each row
     button_x_positions = [screen_width / 4, screen_width / 2, 3 * screen_width / 4]
 
-    MENU_TEXT = pygame.font.Font(None, 100).render("First, you need to choose a map", True, pygame.Color("Black"))
+    MENU_TEXT = pygame.font.Font(None, 100).render("Now, you need to choose an algorithm", True, pygame.Color("Black"))
     MENU_RECT = MENU_TEXT.get_rect(center=(screen_width / 2, margin_top / 2))
 
     # Define buttons
@@ -611,8 +662,6 @@ def mod_lvl3(filename, output_suffix,algo):
     write_file(output_file, path,algo)
     start(board, path)
 
-
-
 def lvl3():
     pygame.init()
 
@@ -755,8 +804,10 @@ def lvl4():
         button_y_positions = [
             screen_height / 4,         # Map 1 button
             screen_height / 4 + 100,   # Map 2 button
-            screen_height / 4 + 200,
-            screen_height / 4 + 300,
+            screen_height / 4 + 200,   # Map 3 button
+            screen_height / 4 + 300,   # Map 4 button
+            screen_height / 4 + 400,   # Map 5 button
+            screen_height / 4 + 500    # Quit button
         ]
 
         LVL1_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[0]), 
@@ -766,12 +817,15 @@ def lvl4():
         LVL3_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[2]), 
                              text_input="Map 3", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
         LVL4_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[3]), 
+                             text_input="Map 4", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
+        LVL5_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[4]), 
+                             text_input="Map 5", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
+        QUIT_BUTTON = Button(None, pos=(screen_width / 2, button_y_positions[5]), 
                              text_input="QUIT", font=get_font(75), base_color="Black", hovering_color="#8d8d8d")
-        
 
         window.blit(MENU_TEXT, MENU_RECT)
 
-        for button in [LVL1_BUTTON, LVL2_BUTTON, LVL3_BUTTON,LVL4_BUTTON]:
+        for button in [LVL1_BUTTON, LVL2_BUTTON, LVL3_BUTTON, LVL4_BUTTON, LVL5_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(window)
 
@@ -787,10 +841,14 @@ def lvl4():
                 elif LVL3_BUTTON.checkForInput(MENU_MOUSE_POS):
                     mode_lvl4("lvl_4/input3_level4.txt", "3")
                 elif LVL4_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    mode_lvl4("lvl_4/input4_level4.txt", "4")
+                elif LVL5_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    mode_lvl4("lvl_4/input5_level4.txt", "5")
+                elif QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     menu()
 
         pygame.display.update()
-            
+#Start function       
 def start(board, path):
     pygame.display.set_caption("Start")
     init_screen(board.rows,board.cols)
@@ -835,59 +893,6 @@ def start(board, path):
                 wait = False
     menu()
 
-def all_paths_completed(step_indices, list_of_recorded_moves):
-    return all(step_index >= len(path) for step_index, path in zip(step_indices, list_of_recorded_moves))
-   
-def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goal):
-    step_indices = [0] * len(list_of_recorded_moves)  # Initialize step index for each vehicle
-    previous_steps = [None] * len(list_of_recorded_moves)  # Store the previous steps
-
-    while not all_paths_completed(step_indices,list_of_recorded_moves):
-        draw_map(board.rows, board.cols)
-        draw_board(board.matrix, board.rows, board.cols)
-        
-        for vehicle_index, path in enumerate(list_of_recorded_moves):
-            if step_indices[vehicle_index] < len(path):
-                current_step = path[step_indices[vehicle_index]]
-                
-                if current_step is not None:
-                    final_step = current_step
-                    previous_steps[vehicle_index] = current_step
-                else:
-                    final_step = previous_steps[vehicle_index]
-
-                if final_step is not None:
-                    row, col = final_step
-                    color = cars_color[vehicle_index] if vehicle_index < len(cars_color) else None
-                    rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
-                    pygame.draw.rect(screen, color, rect)
-                    pygame.draw.rect(screen, BLACK, rect, 1)
-                    font = pygame.font.SysFont(None, 24)
-                    text = font.render(f'Xe {vehicle_index}', True, BLACK)
-                    text_rect = text.get_rect(center=(col * cell_size + cell_size // 2, row * cell_size + cell_size // 2))
-                    screen.blit(text, text_rect)
-                
-                step_indices[vehicle_index] += 1
-                # # Check if the vehicle reached its goal
-                # if step_indices[vehicle_index] >= len(path):
-                #     # Move to the next start-goal pair for the vehicle
-                #     current_goal_indices[vehicle_index] = (current_goal_indices[vehicle_index] + 1) % len(goal_lists[vehicle_index])
-                #     if len(goal_lists[vehicle_index]) == 0:
-                #         continue  # Skip if there are no start-goal pairs
-
-                #     # Get the new start-goal pair
-                #     new_start_goal = goal_lists[vehicle_index][current_goal_indices[vehicle_index]]
-                    
-                #     # Redraw the map with the new start and goal points
-                #     draw_map(board.rows, board.cols)
-                #     draw_board(board.matrix, board.rows, board.cols)
-                    
-                #     # Update the path (assuming there's a function to calculate a new path based on start and goal)
-                #     list_of_recorded_moves[vehicle_index] = calculate_new_path(new_start_goal[0], new_start_goal[1])
-                #     step_indices[vehicle_index] = 0  # Reset step index for the new path       
-
-        pygame.display.update()
-        time.sleep(0.5)  # Adjust delay time for slower motion
 
 def start_lv4_clone(boards, initialize_board):
     rows = initialize_board.rows
@@ -916,3 +921,28 @@ def start_lv4_clone(boards, initialize_board):
                 wait = False
     
     menu()  # Call the menu function to exit
+
+def test():
+    pygame.display.set_caption("Start")
+    matrix, time, fuel = read_file('lvl_1/input5_level1.txt')
+    board = Board(matrix, time, fuel)
+    
+    init_screen(board.rows,board.cols)
+    #Game loop
+    global step_index
+    step_index = 0
+    run = True
+    while run:
+        for event in pygame.event.get():    
+            if event.type == pygame.QUIT:
+                run = False
+        
+        #Animated the path on the screen 
+        draw_map(board.rows, board.cols)
+        draw_board(board.matrix,board.rows,board.cols)
+        run =False
+    wait = True
+    while wait:
+        for event in pygame.event.get():        
+            if event.type == pygame.QUIT:
+                wait = False    
