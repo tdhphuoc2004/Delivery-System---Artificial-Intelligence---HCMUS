@@ -21,7 +21,16 @@ def a_star_search(board, start, goal, initial_fuel):
             if board.matrix[neighbor[0]][neighbor[1]][0] == 'F':
                 new_fuel = initial_fuel
 
-            if new_fuel < 0:
+            if new_fuel == 0 and neighbor == goal:
+                cost_so_far[neighbor] = new_cost
+                fuel_at_node[neighbor] = new_fuel
+                priority = new_cost + heuristic(neighbor, goal)
+                heapq.heappush(frontier, (priority, neighbor, new_fuel))
+                came_from[neighbor] = current
+                continue
+
+
+            if new_fuel <= 0:
                 continue
 
             if (neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]) and new_fuel >= 0:
@@ -69,7 +78,7 @@ def A_star_search(board):
         if total_cost < shortest_cost:
             shortest_path = total_path
             shortest_cost = total_cost
-
+        print(total_cost)
     return shortest_path if shortest_cost <= board.time else None
 
 
