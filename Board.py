@@ -78,6 +78,7 @@ class Board:
          #spawn new goal for other vehicles
         #vehicle: string from "1" to "9"
         available_positions = []
+        
         for i in range(self.rows):
             for j in range(self.cols):
                 if self.matrix[i][j] == '0':  # Check if the cell is empty
@@ -88,6 +89,8 @@ class Board:
             self.matrix[new_start_pos[0]][new_start_pos[1]] = 'S' + vehicle
             self.record_start_and_goal(new_start_pos, None)
             self.start_pos = new_start_pos
+            self.current_pos = new_start_pos
+            self.recorded_move.append(new_start_pos)
             return new_start_pos
         return None
     

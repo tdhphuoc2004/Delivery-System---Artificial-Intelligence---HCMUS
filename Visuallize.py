@@ -887,7 +887,7 @@ def draw_multiple_path(board, list_of_recorded_moves, list_of_recorded_start_goa
                 #     step_indices[vehicle_index] = 0  # Reset step index for the new path       
 
         pygame.display.update()
-        time.sleep(0.5)  # Adjust delay time for slower motion
+        time.sleep(2)  # Adjust delay time for slower motion
 
 def start_lv4_clone(boards, initialize_board):
     rows = initialize_board.rows
