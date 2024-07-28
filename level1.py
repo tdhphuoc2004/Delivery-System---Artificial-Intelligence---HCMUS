@@ -127,6 +127,8 @@ def IDS(board):
         result = DLS(board, depth_limit)
         if result is not None:
             return result
+        if (depth_limit == 50): 
+            return None 
         depth_limit += 1  # Increase depth limit for next iteration
         
 

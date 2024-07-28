@@ -39,7 +39,7 @@ def a_star_search(board, start, goal, initial_fuel, current_fuel):
             if board.matrix[neighbor[0]][neighbor[1]][0] == 'F':
                 new_fuel = initial_fuel
 
-            if new_fuel < 0:
+            if new_fuel <= 0:
                 continue
 
             if (neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]) and new_fuel >= 0:

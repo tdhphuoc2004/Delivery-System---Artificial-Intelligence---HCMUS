@@ -1,0 +1,146 @@
+Recorded Paths:
+Vehicle 1 Path:
+  (6, 1)
+  (6, 2)
+  (6, 3)
+  (6, 4)
+  None
+  (6, 3)
+  None
+  (5, 3)
+  (5, 4)
+  None
+  (4, 4)
+  (4, 5)
+  (4, 6)
+  None
+  (4, 7)
+  (5, 7)
+  (5, 8)
+  (4, 8)
+  (4, 9)
+
+Vehicle 2 Path:
+  (5, 1)
+  (5, 2)
+  (5, 3)
+  (5, 4)
+  None
+  (4, 4)
+  (4, 5)
+  (3, 5)
+  (3, 6)
+  (3, 7)
+  (3, 8)
+  (3, 9)
+  (3, 9)
+  (3, 8)
+  None
+  (3, 7)
+  (3, 6)
+  None
+  (3, 5)
+
+Vehicle 3 Path:
+  (7, 1)
+  (7, 2)
+  (7, 3)
+  None
+  None
+  None
+  (7, 4)
+  (6, 4)
+  None
+  None
+  None
+  (5, 4)
+  (4, 4)
+  (4, 5)
+  (3, 5)
+  (2, 5)
+  (2, 6)
+  (2, 7)
+
+Vehicle 4 Path:
+  (3, 1)
+  (3, 2)
+  None
+  None
+  None
+  None
+  (4, 2)
+  (4, 3)
+  (4, 4)
+  (4, 5)
+  (3, 5)
+  (2, 5)
+  (1, 5)
+  (1, 6)
+  (1, 7)
+  (1, 8)
+  (1, 9)
+  (1, 9)
+  (1, 8)
+
+Vehicle 5 Path:
+  None
+  None
+  None
+  None
+  None
+  None
+  (2, 1)
+  None
+  None
+  (3, 1)
+  None
+  (3, 2)
+  None
+  (4, 2)
+  (4, 3)
+  (4, 4)
+  (4, 5)
+  (4, 6)
+
+Vehicle 6 Path:
+  (4, 1)
+  (4, 2)
+  (4, 3)
+  (4, 4)
+  (4, 5)
+  (4, 6)
+  (4, 7)
+  (4, 8)
+  (4, 9)
+  (5, 9)
+  (6, 9)
+  (6, 9)
+  (5, 9)
+  (4, 9)
+  (4, 8)
+  (4, 8)
+  None
+  (4, 7)
+  None
+  None
+
+Recorded Start-Goal:
+Vehicle 1 Start-Goal:
+  No start-goal recorded
+
+Vehicle 2 Start-Goal:
+  Start: (3, 9) -> Goal: (4, 4)
+
+Vehicle 3 Start-Goal:
+  No start-goal recorded
+
+Vehicle 4 Start-Goal:
+  Start: (1, 9) -> Goal: (3, 1)
+
+Vehicle 5 Start-Goal:
+  No start-goal recorded
+
+Vehicle 6 Start-Goal:
+  Start: (6, 9) -> Goal: (4, 8)
+  Start: (4, 8) -> Goal: (2, 4)
+
