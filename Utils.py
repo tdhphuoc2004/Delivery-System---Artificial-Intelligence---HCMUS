@@ -104,7 +104,8 @@ def generateNewState(board, vehicle_id, gas_stations, moveto):
     if moveto is None:
         # Convert the position the vehicle is staying to -1
         board.matrix[x_coord][y_coord] = '-1'
-        board.time -= 1 
+        if(board.time > 0): 
+            board.time -= 1 
         board.recorded_move.append(None)
         return 
     else:
