@@ -104,7 +104,6 @@ def A_star_search_lv4(boards):
     """
     
     # Initialize paths storage
-    vehicle_paths = [[] for _ in boards]
     gas_stations = boards[0].find_gas_locations()
     initial_fuel = boards[0].inital_fuel 
     while True:
