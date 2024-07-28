@@ -81,10 +81,6 @@ def restore_vehicle_positions(boards, current_board):
             # # Update the current position of the vehicle
             # board.current_pos = recorded_pos
 
-            print(f"Restored vehicle {board.ID} to position {recorded_pos}")
-        else:
-            print(f"No recorded position for vehicle {board.ID}")
-
     
 
 def generateNewState(board, vehicle_id, gas_stations, moveto):
@@ -184,7 +180,6 @@ def print_vehicle_status(board):
     print(f"Vehicle Index: {board.ID}")
     print(f"Current Position: {board.current_pos}")
     # Optionally, print the state of the board
-    print("State of the board after restoring:")
     board.print_board()
     print("\n")
     print(f"================================================================")
